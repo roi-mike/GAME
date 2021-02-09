@@ -1,9 +1,25 @@
 const express = require('express');
 route = express();
 
+const { PostsModel }  = require('../models/postsModels');
+
 route.get('/',(req,res)=>{
-    var title = "INDEX";
-    res.render('index.ejs',{title:title})
+    res.render('index.ejs');
+});
+
+route.post('/checkinscription', (req,res)=>{
+    const pseudo = req.body.pseudo;
+    if(pseudo){
+        console.log('VOTRE PSEUDO', pseudo);
+        const newRecord = new PostsModel({
+            pseudoID:pseudo
+        });
+        newRecord.save((err,docs) => {
+            if(!err) res.send(docs);
+            else console.log('Error creating new data : '+err);
+        });
+        res.redirect('/game');
+    }
 });
 
 route.get('/tchat',(req,res)=>{
@@ -13,12 +29,12 @@ route.get('/tchat',(req,res)=>{
 
 route.get('/game',(req,res)=>{
     var title = "GAME";
-    res.render('game.ejs',{title:title})
+    res.render('game.ejs',{title:title});
 });
 
 route.get('*',(req,res)=>{
     var title = "ERREUR";
-    res.render('erreur.ejs',{title:title})
+    res.render('404.ejs',{title:title});
 });
 
 

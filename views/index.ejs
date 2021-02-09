@@ -12,8 +12,9 @@
             <%- include("./base.static.view.ejs"); %>
         </header>
         <main>
-            <form action="/" method="post">
-                <input type="text" placeholder="votre pseudo">
+            <form action="/checkinscription" method="post">
+                <input name="pseudo" type="text" placeholder="votre pseudo" required>
+                <input type="submit" value="INSCRIPTION">
             </form>
         </main>
         <footer>

@@ -9,10 +9,12 @@
 <body>
     <div id="container" >
         <header>
-            <%- include("./indexhtml/headerindex.ejs"); %>
+            <%- include("./base.static.view.ejs"); %>
         </header>
         <main>
-            
+            <form action="/" method="post">
+                <input type="text" placeholder="votre pseudo">
+            </form>
         </main>
         <footer>
 

@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 
 const servePort = process.env.PORT || 8080;
+
 app.use('/static', express.static(__dirname + '/public'));
 app.set('view engine', 'ejs');
 

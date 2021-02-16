@@ -4,39 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="../static/css/index.css">
+    <link rel="stylesheet" href="../static/css/account.css">
 </head>
 <body>
     <div id="container" >
+        <header>
+            <%- include("./base.static.view.ejs"); %>
+        </header>
         <main>
             <div id="presentationpageindex">
                 <p>Jeux En Cours</p>
                 <div id="listesgameencours">
                     <div id="jeuencours" >
-                        <span id="jeuencoursnomjouer">LE JOUEUR </span>
+                        <span id="jeuencoursnomjouer">LE JOUEUR</span>
                         <span id="able"></span>
                     </div>
                 </div>
             </div>
             <div id="inscriptionpageindex">
-                <%if( erreurpseudo ){%>
-                    <div><%- erreurpseudo %></div>
-                <%}%>
-                <div id="alerinformationauclique" >
-                    Helloooo 👨‍👩‍ <br/>
-                    POUR COMMENCER A JOUER VOUS DEVAIS ENTRER UN PSEUDO 
-                    <span id="quitter">X</span>
+
+
+                <div>
+                    COMMENCER UNE PARTIE
                 </div>
-                <form action="/" method="post">
-                    <input name="pseudo" type="text" placeholder="votre pseudo" required>
-                    <input type="submit" value="INSCRIPTION">
-                </form>
             </div>
         </main>
         <footer>
             <h2>© 2021 ROI-MIKE ENTERTAINMENT. Tous droits réservés <a href="https://www.linkedin.com/in/samuel-maboza-hondi/">MABOZA HONDI SAMUEL</a></h2>
         </footer>
     </div>
-    <script src="../static/javascript/index.js"></script>
 </body>
 </html>

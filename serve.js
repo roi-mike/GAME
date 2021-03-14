@@ -26,6 +26,13 @@ const io = require('socket.io')(server);
 let customer = {
   customergame: false,
  };
+let ball = {
+  ballRadius: 1.6,
+  x : 300/2,
+  y : 100,
+  dx : 1.8,
+  dy : -1.8,
+}
 
 app.use('/static', express.static(__dirname + '/public'));
 app.use('/account/static', express.static(__dirname + '/public'));
@@ -124,12 +131,20 @@ app.get("/account/game/:idgame", (req, res) => {
   
 });
 
+
+function peint(){
+  io.emit('ball',ball);
+
+  ball.x += ball.dx;
+  ball.y += ball.dy;
+}
+
+
+
 io.on('connection', socket => {
   if(customer.customergame){
-    socket.on('ball_game', data => {
-      customer[socket.id] = data;
-      io.emit('ball_game_client',{x:data.x, y:data.y});
-    });
+    setInterval(peint,1000);
+    console.log('IL Y A UNE CONNECTION', customer);
   }
   socket.on('disconnect', function(){
     customer.customergame = false;

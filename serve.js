@@ -18,7 +18,7 @@ app.use(session({
 
 require('./models/dbConfig');
 
-const servePort =  8080;
+const servePort = process.env.PORT || 8080;
 
 // ajout de socket.io
 const server = require('http').createServer(app);
@@ -52,7 +52,7 @@ app.post("/", (req, res) => {
     .exec()
     .then(result =>{
       if(result != null ){
-        res.render("index.ejs",{ erreurpseudo : " Deja inscrit " })
+        res.render("index.ejs",{ erreurpseudo : " Deja inscrit " });
       }else{
         req.session.nameplayeur = pseudo;
         console.log("PREMIERE INFO : ", pseudo);

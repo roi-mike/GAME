@@ -5,7 +5,6 @@ route = express();
 route.set('trust proxy', 1) // trust first proxy
 route.use(cookie_parser());
 
-var sess;
 route.use(session({
   secret: 'playeur',
   resave: false,
@@ -16,7 +15,7 @@ route.use(session({
 }));
 
 const { PostsModel } = require("../models/postsModels");
-const { render } = require("ejs");
+//const { render } = require("ejs");
 
 route.get("/", (req, res) => {
   res.render("index.ejs", {erreurpseudo: false});
@@ -33,7 +32,7 @@ route.post("/", (req, res) => {
       }else{
         req.session.nameplayeur = pseudo;
         console.log("PREMIERE INFO : ", pseudo);
-        const idgamerandom = Math.floor(Math.random()*100);
+  
         res.redirect(301,`/account`)
         //res.redirect(301, `/game/idgame-${idgamerandom}`)   
       }
@@ -60,7 +59,14 @@ route.get('/account', (req,res)=>{
   }else{
     res.redirect('/');
   }
-  
+});
+
+route.get('/account/', (req,res)=>{
+  if(req.session.nameplayeur){
+    res.render('account.ejs',{pseudoid: req.session.nameplayeur})
+  }else{
+    res.redirect('/');
+  }
 });
 
 route.get("/tchat", (req, res) => {
@@ -80,11 +86,16 @@ route.get("/game", (req, res) => {
   
 });
 
-route.get("/game/:idgame", (req, res) => {
+route.get("/account/game/:idgame", (req, res) => {
   if(req.session.nameplayeur){
     console.log(req.session)
     console.log('VOTRE SESSION ', req.session.nameplayeur);
     var title = "GAME SAMUEL";
+    // établissement de la connexion
+    io.on('connection', (socket) =>{
+      
+      console.log(`Connecté au client ${socket.id}`)
+    })
     res.render("game.ejs", { client: req.session.nameplayeur ,title: title });
   }else{
     res.redirect('/');

@@ -4,7 +4,8 @@
   "description": "",
   "main": "serve.js",
   "scripts": {
-    "start": "node serve.js"
+    "start": "node serve.js",
+    "dev": "nodemon serve.js"
   },
   "author": "",
   "license": "ISC",
@@ -12,10 +13,11 @@
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
-    "ejs": "^3.1.5",
+    "ejs": "^3.1.6",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "mongodb": "^3.6.4",
-    "mongoose": "^5.11.15"
+    "mongoose": "^5.11.18",
+    "socket.io": "^3.1.2"
   }
 }

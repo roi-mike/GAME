@@ -1,0 +1,60 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+div#container{
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    background-color: red;
+}
+div#erreurmessage{
+    background-color: beige;
+    height: 650px;
+    width: 600px;
+}
+div#titleerreur{
+    text-transform: uppercase;
+    text-align: center;
+    background-color:#4f4f4f;
+    color: white;
+    height: 100px;
+}
+div#titleerreur h2{
+    font-size: 2.4em;
+}
+div#information_profil{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    color: #888888;
+}
+div#information{/*INFORMATION CHANGER HEIGHT*/
+    background-color: pink;
+    opacity: 0.6;
+    flex-grow: 1 ;
+    text-align: right;
+}
+p.title_information{
+    border-bottom: 1px solid rgb(168, 164, 164);
+    margin-bottom: 30px;
+    margin-top: 30px;
+}
+div#profil{/*INFORMATION CHANGER HEIGHT*/
+    flex-grow: 3;
+    background-color: purple;
+    opacity: 0.6;
+}
+div#retour_accueil a{
+    cursor: pointer;
+    width: 150px;
+    height: 50px;
+    background-color: red;
+    color: white;
+    text-decoration: none;
+    padding: 10px;
+    border-radius: 10%;
+}

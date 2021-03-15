@@ -143,10 +143,12 @@ function peint(){
 
 io.on('connection', socket => {
   if(customer.customergame){
-    setInterval(peint,1000);
+    setInterval(peint,20);
     console.log('IL Y A UNE CONNECTION', customer);
   }
   socket.on('disconnect', function(){
+    ball.x = 300/2;
+    ball.y = 100;
     customer.customergame = false;
     delete customer[socket.id];
     console.log('DECONNECTION !');

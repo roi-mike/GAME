@@ -74,7 +74,7 @@ function draw(){
 
 
 
-setInterval(draw,1000/60);
+setInterval(draw,10);
 
 
 

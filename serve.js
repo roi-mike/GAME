@@ -167,7 +167,7 @@ io.on('connection', socket => {
     players[socket.id].win = false;
     players[socket.id].y = 10; 
     players[socket.id].x = 10;
-    setInterval(peint,10);
+    setInterval(peint,50);
     socket.on('playeur bas',data => {
       console.log('CHIFFRE : ',data)//FAIRE SA
       players[socket.id].y+=data;

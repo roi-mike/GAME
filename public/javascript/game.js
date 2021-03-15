@@ -69,11 +69,11 @@ function draw(){
         document.addEventListener('keydown', function(evt){
                 if(evt.code === "ArrowUp"){
                         console.log('EN HAUT 1');
-                        socket.emit("playeur haut", 2);
+                        socket.emit("playeur haut", 5);
                 }
                 if(evt.code === "ArrowDown"){
                         console.log('EN BAS 2');
-                        socket.emit("playeur bas", 2);
+                        socket.emit("playeur bas", 5);
                 }
         });
 

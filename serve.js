@@ -167,8 +167,15 @@ io.on('connection', socket => {
     players[socket.id].win = false;
     players[socket.id].y = 10; 
     players[socket.id].x = 10;
-    setInterval(peint,1000/60);
-    
+    setInterval(peint,10);
+    socket.on('playeur bas',data => {
+      console.log('CHIFFRE : ',data)//FAIRE SA
+      players[socket.id].y+=data;
+    });
+    socket.on('playeur haut',data => {
+      console.log('CHIFFRE : ',data)//FAIRE SA
+      players[socket.id].y-=data;
+    });
     console.log('IL Y A UNE CONNECTION', players);
   }
   socket.on('disconnect', function(){

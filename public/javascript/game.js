@@ -65,6 +65,24 @@ function draw(){
                 });
         });
 
+
+        document.addEventListener('keydown', function(evt){
+                if(evt.code === "ArrowUp"){
+                        console.log('EN HAUT 1');
+                        socket.emit("playeur haut", 2);
+                }
+                if(evt.code === "ArrowDown"){
+                        console.log('EN BAS 2');
+                        socket.emit("playeur bas", 2);
+                }
+        });
+
+
+        
+
+
+        
+
         //                 ctx.clearRect(0, 0, canvas.width, canvas.height);
         //                 ctx.beginPath();
         //                 ctx.arc(data.x, data.y, data.ballRadius, 0, Math.PI*2);
@@ -84,6 +102,8 @@ function draw(){
 
 
 draw()
+
+
 
 
 

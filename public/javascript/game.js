@@ -42,6 +42,9 @@ function draw(){
         // if(y + dy > canvas.height || y + dy < 0) {
         //         dy = -dy;
         // }
+
+
+
         socket.emit('canvas size', {
                 canvaswidth: x,
                 canvasheight: y
@@ -54,6 +57,12 @@ function draw(){
                 ctx.fillStyle = "rgb(256, 256, 256)";
                 ctx.fill();
                 ctx.closePath();
+                socket.on('players', data => {
+                        for(const elements in data){
+                                ctx.fillStyle = 'rgb(256, 256, 256)';
+                                ctx.fillRect(data[elements].x, data[elements].y, 2.5, 20);
+                        }
+                });
         });
 
         //                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -64,7 +73,8 @@ function draw(){
         //                 ctx.closePath();
 
         //PLAYER 1
-        play1()
+        //play1()
+        
 
         //PLAYERS 2
         play2()
@@ -73,8 +83,7 @@ function draw(){
 
 
 
-
-setInterval(draw,10);
+draw()
 
 
 

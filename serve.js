@@ -26,6 +26,9 @@ const io = require('socket.io')(server);
 let customer = {
   customergame: false,
  };
+let players = {
+  
+}
 let ball = {
   ballRadius: 1.6,
   x : 300/2,
@@ -134,14 +137,23 @@ app.get("/account/game/:idgame", (req, res) => {
 
 function peint(){
   io.emit('ball',ball);
+  io.emit('players',players);
 
   ball.x += ball.dx;
   ball.y += ball.dy;
 
-  if(ball.x + ball.dx > 300 || ball.x + ball.dx < 0) {
+  if(ball.x + ball.dx > 300 || ball.x + ball.dx < ball.ballRadius) {
     ball.dx = -ball.dx;
   }
-  if(ball.y + ball.dy > 150 || ball.y + ball.dy < 0) {
+  if(ball.x + ball.dx < 3 || ball.x + ball.dx < ball.ballRadius){
+    //console.log('JE SUIS A GAUCHE');
+  }
+  if(ball.x + ball.dx > 299 || ball.x + ball.dx < ball.ballRadius){
+    //console.log('JE SUIS A DROITE');
+  }
+
+
+  if(ball.y + ball.dy > 150 || ball.y + ball.dy < ball.ballRadius) {
     ball.dy = -ball.dy;
   }
 
@@ -151,14 +163,20 @@ function peint(){
 
 io.on('connection', socket => {
   if(customer.customergame){
-    setInterval(peint,20);
-    console.log('IL Y A UNE CONNECTION', customer);
+    players[socket.id] = {};
+    players[socket.id].win = false;
+    players[socket.id].y = 10; 
+    players[socket.id].x = 10;
+    setInterval(peint,1000/60);
+    
+    console.log('IL Y A UNE CONNECTION', players);
   }
   socket.on('disconnect', function(){
     ball.x = 300/2;
     ball.y = 100;
     customer.customergame = false;
-    delete customer[socket.id];
+    delete players[socket.id];
+    console.log('DECONNECT : ', Object.keys(players))
     console.log('DECONNECTION !');
   });
 });

@@ -137,6 +137,14 @@ function peint(){
 
   ball.x += ball.dx;
   ball.y += ball.dy;
+
+  if(ball.x + ball.dx > 300 || ball.x + ball.dx < 0) {
+    ball.dx = -ball.dx;
+  }
+  if(ball.y + ball.dy > 150 || ball.y + ball.dy < 0) {
+    ball.dy = -ball.dy;
+  }
+
 }
 
 

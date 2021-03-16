@@ -142,9 +142,13 @@ function peint(){
   ball.x += ball.dx;
   ball.y += ball.dy;
 
+  /*FAIRE REBONDIRE LA BALLE SUR LES MURS DE DROITE ET DE GAUCHE*/
   if(ball.x + ball.dx > 300 || ball.x + ball.dx < ball.ballRadius) {
     ball.dx = -ball.dx;
+    
   }
+  
+  /*VERIFIE SI LA BALLE TAPE A GAUCHE OU A DROITE*/
   if(ball.x + ball.dx < 3 || ball.x + ball.dx < ball.ballRadius){
     //console.log('JE SUIS A GAUCHE');
   }
@@ -152,7 +156,7 @@ function peint(){
     //console.log('JE SUIS A DROITE');
   }
 
-
+  /*FAIRE REBONDIRE LA BALLE SUR LES MURS DU HAUT ET DU BAS*/
   if(ball.y + ball.dy > 150 || ball.y + ball.dy < ball.ballRadius) {
     ball.dy = -ball.dy;
   }
@@ -165,8 +169,15 @@ io.on('connection', socket => {
   if(customer.customergame){
     players[socket.id] = {};
     players[socket.id].win = false;
-    players[socket.id].y = 10; 
-    players[socket.id].x = 10;
+    players[socket.id].y = 10;
+    var cptplayers = 0;
+    for(let cpt in players){
+      console.log(`PLAY ${cpt[players]} `);
+      console.log(`iNFORMATION  PLAY ${players[cpt]}`);
+      console.log(`INFORMATION ${cptplayers} ID ${cpt}`);
+      players[socket.id].x = (cptplayers === 0) ? 10 : 285 ;
+      cptplayers++;
+    }
     setInterval(peint,50);
     socket.on('playeur bas',data => {
       console.log('CHIFFRE : ',data)//FAIRE SA
@@ -177,6 +188,8 @@ io.on('connection', socket => {
       players[socket.id].y-=data;
     });
     console.log('IL Y A UNE CONNECTION', players);
+    console.log('IL SE TROUVE A L MEPLACEMENT ', players[socket.id]);
+    
   }
   socket.on('disconnect', function(){
     ball.x = 300/2;

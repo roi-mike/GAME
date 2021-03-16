@@ -135,33 +135,36 @@ app.get("/account/game/:idgame", (req, res) => {
 });
 
 
-function peint(){
-  io.emit('ball',ball);
-  io.emit('players',players);
+// function peint(){
+//   io.emit('ball',ball);
+//   io.emit('players',players);
 
-  ball.x += ball.dx;
-  ball.y += ball.dy;
+//   ball.x += ball.dx;
+//   ball.y += ball.dy;
 
-  /*FAIRE REBONDIRE LA BALLE SUR LES MURS DE DROITE ET DE GAUCHE*/
-  if(ball.x + ball.dx > 300 || ball.x + ball.dx < ball.ballRadius) {
-    ball.dx = -ball.dx;
+//   /*FAIRE REBONDIRE LA BALLE SUR LES MURS DE DROITE ET DE GAUCHE*/
+//   if(ball.x + ball.dx > 300 || ball.x + ball.dx < ball.ballRadius) {
+//     ball.dx = -ball.dx;
     
-  }
+//   }
   
-  /*VERIFIE SI LA BALLE TAPE A GAUCHE OU A DROITE*/
-  if(ball.x + ball.dx < 3 || ball.x + ball.dx < ball.ballRadius){
-    //console.log('JE SUIS A GAUCHE');
-  }
-  if(ball.x + ball.dx > 299 || ball.x + ball.dx < ball.ballRadius){
-    //console.log('JE SUIS A DROITE');
-  }
+//   /*VERIFIE SI LA BALLE TAPE A GAUCHE OU A DROITE*/
+//   if(ball.x + ball.dx < 3 || ball.x + ball.dx < ball.ballRadius){
+//     //console.log('JE SUIS A GAUCHE');
+//   }
+//   if(ball.x + ball.dx > 299 || ball.x + ball.dx < ball.ballRadius){
+//     //console.log('JE SUIS A DROITE');
+//   }
 
-  /*FAIRE REBONDIRE LA BALLE SUR LES MURS DU HAUT ET DU BAS*/
-  if(ball.y + ball.dy > 150 || ball.y + ball.dy < ball.ballRadius) {
-    ball.dy = -ball.dy;
-  }
+//   /*FAIRE REBONDIRE LA BALLE SUR LES MURS DU HAUT ET DU BAS*/
+//   if(ball.y + ball.dy > 150 || ball.y + ball.dy < ball.ballRadius) {
+//     ball.dy = -ball.dy;
+//   }
 
-}
+//   /*DETECTION DES COLLISION JOUEUR VS BALL*/
+
+
+// }
 
 
 
@@ -178,7 +181,44 @@ io.on('connection', socket => {
       players[socket.id].x = (cptplayers === 0) ? 10 : 285 ;
       cptplayers++;
     }
-    setInterval(peint,50);
+    var peint = setInterval(function(){
+
+      io.emit('ball',ball);
+      io.emit('players',players);
+
+      ball.x += ball.dx;
+      ball.y += ball.dy;
+
+      /*FAIRE REBONDIRE LA BALLE SUR LES MURS DE DROITE ET DE GAUCHE*/
+      if(ball.x + ball.dx > 300 || ball.x + ball.dx < ball.ballRadius) {
+        ball.dx = -ball.dx;
+        
+      }
+      
+      /*VERIFIE SI LA BALLE TAPE A GAUCHE OU A DROITE*/
+      if(ball.x + ball.dx < 3 || ball.x + ball.dx < ball.ballRadius){
+        //console.log('JE SUIS A GAUCHE');
+      }
+      if(ball.x + ball.dx > 299 || ball.x + ball.dx < ball.ballRadius){
+        //console.log('JE SUIS A DROITE');
+      }
+
+      /*FAIRE REBONDIRE LA BALLE SUR LES MURS DU HAUT ET DU BAS*/
+      if(ball.y + ball.dy > 150 || ball.y + ball.dy < ball.ballRadius) {
+        ball.dy = -ball.dy;
+      }
+
+      /*DETECTION DES COLLISION JOUEUR VS BALL*/
+
+      if(players[socket.id].x < ball.x + ball.ballRadius &&
+        players[socket.id].x + 2.5 > ball.x &&
+        players[socket.id].y < ball.y + ball.ballRadius &&
+        players[socket.id].y + 20 > ball.y + ball.ballRadius){
+        ball.dx = -ball.dx;
+      }
+
+
+    },50);
     socket.on('playeur bas',data => {
       console.log('CHIFFRE : ',data)//FAIRE SA
       players[socket.id].y+=data;

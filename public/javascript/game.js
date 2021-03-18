@@ -10,31 +10,48 @@ const ballRadius = 2.5;
 let x = canvas.width/2;
 let y = canvas.height-30;
 
-function draw(){
 
-        //SIZE CANVAS
-        socket.emit('canvas size', {
-                canvaswidth: x,
-                canvasheight: y
-        })
 
-        //BALL
-        socket.on('ball', data => {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.beginPath();
-                ctx.arc(data.x, data.y, data.ballRadius, 0, Math.PI*2);
-                ctx.fillStyle = "rgb(256, 256, 256)";
-                ctx.fill();
-                ctx.closePath();
-                
-        });
+        // //SIZE CANVAS
+        // socket.emit('canvas size', {
+        //         canvaswidth: x,
+        //         canvasheight: y
+        // })
+
+
         //PLAYER 1 et 2
         socket.on('players', data => {
-                for(const elements in data){
-                        ctx.fillStyle = 'rgb(256, 256, 256)';
-                        ctx.fillRect(data[elements].x, data[elements].y, 2.5, 20);
+                        for(let id in data){
+                                if(data[id].x != undefined){
+                                        ctx.fillStyle = 'rgb(256, 256, 256)';
+                                        ctx.fillRect(data[id].x, data[id].y, 2.5, 20);
+                                }
+                        }
+        });
+
+        //BALL
+        socket.on('ball', data => { 
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                if(data != undefined){
+                        ctx.beginPath();
+                        ctx.arc(data.x, data.y, data.ballRadius, 0, Math.PI*2);
+                        ctx.fillStyle = "rgb(256, 256, 256)";
+                        ctx.fill();
+                        ctx.closePath();
                 }
         });
+
+        /*DROITE DE JOUER OU PAS */
+        socket.on("right", data => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                if(data !== undefined){
+                ctx.font = "10px serif";
+                ctx.fillText("Attente du second joueur..",10,10);
+                }
+        });
+
+        
+        
 
         //MOVE PLAYERS
         document.addEventListener('keydown', function(evt){
@@ -47,11 +64,7 @@ function draw(){
                         socket.emit("playeur bas", 5);
                 }
         });
-}
 
-
-
-draw()
 
 
 

@@ -161,7 +161,7 @@ app.get("/account/game/:idgame", (req, res) => {
 //     ball.dy = -ball.dy;
 //   }
 
-//   /*DETECTION DES COLLISION JOUEUR VS BALL*/
+//   /*detection colisions JOUEUR VS BALL*/
 
 
 // }
@@ -173,17 +173,29 @@ io.on('connection', socket => {
     players[socket.id] = {};
     players[socket.id].win = false;
     players[socket.id].y = 10;
+    console.log('IL Y A ',Object.keys(players).length);
     var cptplayers = 0;
     for(let cpt in players){
-      console.log(`PLAY ${cpt[players]} `);
-      console.log(`iNFORMATION  PLAY ${players[cpt]}`);
-      console.log(`INFORMATION ${cptplayers} ID ${cpt}`);
-      players[socket.id].x = (cptplayers === 0) ? 10 : 285 ;
+      console.log(`2 iNFORMATION  PLAY ${players[cpt]}`);
+      console.log(`3 INFORMATION ${cptplayers} ID ${cpt}`);
+      if(players[socket.id]){
+        players[socket.id].x = (cptplayers === 0) ? 10 : 285 ;
+      }
       cptplayers++;
     }
     var peint = setInterval(function(){
 
-      io.emit('ball',ball);
+      /*Verif numb players connected if player is egal one player*/
+      if(Object.keys(players).length === 1){
+        io.emit("right", 0);
+        // console.log("Attente du second joueur..");
+      }
+      
+      /*Verif numb players if there is more one player we start the game */
+      if(Object.keys(players).length != 1){
+        io.emit('ball',ball);
+      }
+      
       io.emit('players',players);
 
       ball.x += ball.dx;
@@ -192,7 +204,6 @@ io.on('connection', socket => {
       /*FAIRE REBONDIRE LA BALLE SUR LES MURS DE DROITE ET DE GAUCHE*/
       if(ball.x + ball.dx > 300 || ball.x + ball.dx < ball.ballRadius) {
         ball.dx = -ball.dx;
-        
       }
       
       /*VERIFIE SI LA BALLE TAPE A GAUCHE OU A DROITE*/
@@ -216,19 +227,17 @@ io.on('connection', socket => {
         players[socket.id].y + 20 > ball.y + ball.ballRadius){
         ball.dx = -ball.dx;
       }
+    },1000/10);
 
-
-    },50);
     socket.on('playeur bas',data => {
-      console.log('CHIFFRE : ',data)//FAIRE SA
       players[socket.id].y+=data;
     });
+
     socket.on('playeur haut',data => {
-      console.log('CHIFFRE : ',data)//FAIRE SA
       players[socket.id].y-=data;
     });
+
     console.log('IL Y A UNE CONNECTION', players);
-    console.log('IL SE TROUVE A L MEPLACEMENT ', players[socket.id]);
     
   }
   socket.on('disconnect', function(){

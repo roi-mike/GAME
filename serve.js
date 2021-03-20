@@ -173,19 +173,13 @@ io.on('connection', socket => {
     players[socket.id] = {};
     players[socket.id].win = false;
     players[socket.id].y = 10;
-    console.log('IL Y A ',Object.keys(players).length);
-    var cptplayers = 0;
-    for(let cpt in players){
-      console.log(`2 iNFORMATION  PLAY ${players[cpt]}`);
-      console.log(`3 INFORMATION ${cptplayers} ID ${cpt}`);
-      if(players[socket.id]){
-        players[socket.id].x = (cptplayers === 0) ? 10 : 285 ;
-      }
-      cptplayers++;
-    }
+    players[socket.id].x = (Object.keys(players).indexOf(socket.id) === 0) ? 10 : 285 ;
+    players[socket.id].score = 0;
+    players[socket.id].scoreY = 15;
+    players[socket.id].scoreX = (Object.keys(players).indexOf(socket.id) === 0) ? 120 : 200 ;
+    
     var peint = setInterval(function(){
-
-      /*Verif numb players connected if player is egal one player*/
+      /*Verif numb players connected if player is egal one player on start the parti*/
       if(Object.keys(players).length === 1){
         io.emit("right", 0);
         // console.log("Attente du second joueur..");
@@ -194,24 +188,51 @@ io.on('connection', socket => {
       /*Verif numb players if there is more one player we start the game */
       if(Object.keys(players).length != 1){
         io.emit('ball',ball);
+        ball.x += ball.dx;
+        ball.y += ball.dy;
       }
       
       io.emit('players',players);
 
-      ball.x += ball.dx;
-      ball.y += ball.dy;
+      
 
       /*FAIRE REBONDIRE LA BALLE SUR LES MURS DE DROITE ET DE GAUCHE*/
       if(ball.x + ball.dx > 300 || ball.x + ball.dx < ball.ballRadius) {
         ball.dx = -ball.dx;
       }
       
-      /*VERIFIE SI LA BALLE TAPE A GAUCHE OU A DROITE*/
+      /*VERIFIE SI LA BALLE TAPE A GAUCHE*/
       if(ball.x + ball.dx < 3 || ball.x + ball.dx < ball.ballRadius){
         //console.log('JE SUIS A GAUCHE');
+        //console.log('LES CLES ', Object.keys(players)[0]);
+        players[`${Object.keys(players)[1]}`].score += 1;
+
+        //CHECK IF THE PLAYER HAS WIN
+        if(players[`${Object.keys(players)[1]}`].score === 5){
+          io.emit('nodisplayball',0);
+          clearInterval(peint);
+          players[`${Object.keys(players)[1]}`].win = true;
+          //LE PLAYER RIGHT IS WINNER
+          console.log('DROITE I LA  GAGNÉ',players[`${Object.keys(players)[1]}`].win);
+        }
+
+        
       }
+
+
+      /*VERIFIE SI LA BALLE TAPE A DROITE*/
       if(ball.x + ball.dx > 299 || ball.x + ball.dx < ball.ballRadius){
         //console.log('JE SUIS A DROITE');
+        players[`${Object.keys(players)[0]}`].score += 1;
+        
+        //CHECK IF THE PLAYER IS WINNER
+        if(players[`${Object.keys(players)[0]}`].score === 5){
+          io.emit('nodisplayball',0);
+          clearInterval(peint);
+          players[`${Object.keys(players)[0]}`].win = true;
+          //LE PLAYER IS WINNER
+          console.log('GAUCHE A LA  GAGNÉ',players[`${Object.keys(players)[0]}`].win);
+        }
       }
 
       /*FAIRE REBONDIRE LA BALLE SUR LES MURS DU HAUT ET DU BAS*/
@@ -219,7 +240,7 @@ io.on('connection', socket => {
         ball.dy = -ball.dy;
       }
 
-      /*DETECTION DES COLLISION JOUEUR VS BALL*/
+      /*DETECTION  COLISSIONS PlAYERS ON BALL*/
 
       if(players[socket.id].x < ball.x + ball.ballRadius &&
         players[socket.id].x + 2.5 > ball.x &&

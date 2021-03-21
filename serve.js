@@ -19,6 +19,7 @@ app.use(session({
 require('./models/dbConfig');
 
 const servePort = process.env.PORT || 8080;
+let startgame = false;
 
 // ajout de socket.io
 const server = require('http').createServer(app);
@@ -117,15 +118,12 @@ app.get("/game", (req, res) => {
   }else{
     res.redirect('/');
   }
-  
 });
 
 app.get("/account/game/:idgame", (req, res) => {
   if(req.session.nameplayeur){
     //console.log(req.session)
     console.log('VOTRE SESSION ', req.session.nameplayeur);
-    let numbPlayeurs = [];
-    let numb = 0;  
     res.render("game.ejs", { client: req.session.nameplayeur});
     // établissement de la connexion SOCKET.IO
   }else{
@@ -133,40 +131,6 @@ app.get("/account/game/:idgame", (req, res) => {
   }
   
 });
-
-
-// function peint(){
-//   io.emit('ball',ball);
-//   io.emit('players',players);
-
-//   ball.x += ball.dx;
-//   ball.y += ball.dy;
-
-//   /*FAIRE REBONDIRE LA BALLE SUR LES MURS DE DROITE ET DE GAUCHE*/
-//   if(ball.x + ball.dx > 300 || ball.x + ball.dx < ball.ballRadius) {
-//     ball.dx = -ball.dx;
-    
-//   }
-  
-//   /*VERIFIE SI LA BALLE TAPE A GAUCHE OU A DROITE*/
-//   if(ball.x + ball.dx < 3 || ball.x + ball.dx < ball.ballRadius){
-//     //console.log('JE SUIS A GAUCHE');
-//   }
-//   if(ball.x + ball.dx > 299 || ball.x + ball.dx < ball.ballRadius){
-//     //console.log('JE SUIS A DROITE');
-//   }
-
-//   /*FAIRE REBONDIRE LA BALLE SUR LES MURS DU HAUT ET DU BAS*/
-//   if(ball.y + ball.dy > 150 || ball.y + ball.dy < ball.ballRadius) {
-//     ball.dy = -ball.dy;
-//   }
-
-//   /*detection colisions JOUEUR VS BALL*/
-
-
-// }
-
-
 
 io.on('connection', socket => {
   if(customer.customergame){
@@ -176,7 +140,7 @@ io.on('connection', socket => {
     players[socket.id].x = (Object.keys(players).indexOf(socket.id) === 0) ? 10 : 285 ;
     players[socket.id].score = 0;
     players[socket.id].scoreY = 15;
-    players[socket.id].scoreX = (Object.keys(players).indexOf(socket.id) === 0) ? 120 : 200 ;
+    players[socket.id].scoreX = (Object.keys(players).indexOf(socket.id) === 0) ? 120 : 170 ;
     
     var peint = setInterval(function(){
       /*Verif numb players connected if player is egal one player on start the parti*/
@@ -188,8 +152,17 @@ io.on('connection', socket => {
       /*Verif numb players if there is more one player we start the game */
       if(Object.keys(players).length != 1){
         io.emit('ball',ball);
-        ball.x += ball.dx;
-        ball.y += ball.dy;
+        socket.on('startgame', data => {
+          startgame = data;
+        })
+        if(players[`${Object.keys(players)[0]}`].win === true || players[`${Object.keys(players)[1]}`].win === true){
+          clearInterval(peint);
+        }{
+          if(startgame === 1){
+            ball.x += ball.dx;
+            ball.y += ball.dy;
+          }
+        }
       }
       
       io.emit('players',players);
@@ -204,13 +177,17 @@ io.on('connection', socket => {
       /*VERIFIE SI LA BALLE TAPE A GAUCHE*/
       if(ball.x + ball.dx < 3 || ball.x + ball.dx < ball.ballRadius){
         //console.log('JE SUIS A GAUCHE');
+        if(players[`${Object.keys(players)[0]}`].score < 5 || players[`${Object.keys(players)[1]}`].score < 5){
+          if(startgame === 1){
+              ball.x = 300/2;
+              startgame = false
+          }
+        }
         //console.log('LES CLES ', Object.keys(players)[0]);
         players[`${Object.keys(players)[1]}`].score += 1;
 
-        //CHECK IF THE PLAYER HAS WIN
+        //CHECK IF THE RIGHT PLAYER HAS WIN
         if(players[`${Object.keys(players)[1]}`].score === 5){
-          io.emit('nodisplayball',0);
-          clearInterval(peint);
           players[`${Object.keys(players)[1]}`].win = true;
           //LE PLAYER RIGHT IS WINNER
           console.log('DROITE I LA  GAGNÉ',players[`${Object.keys(players)[1]}`].win);
@@ -224,11 +201,16 @@ io.on('connection', socket => {
       if(ball.x + ball.dx > 299 || ball.x + ball.dx < ball.ballRadius){
         //console.log('JE SUIS A DROITE');
         players[`${Object.keys(players)[0]}`].score += 1;
+        if(players[`${Object.keys(players)[0]}`].score < 5 || players[`${Object.keys(players)[1]}`].score < 5){
+          if(startgame === 1){
+            
+              ball.x = 300/2;
+              startgame = false;
+            }
+        }
         
         //CHECK IF THE PLAYER IS WINNER
         if(players[`${Object.keys(players)[0]}`].score === 5){
-          io.emit('nodisplayball',0);
-          clearInterval(peint);
           players[`${Object.keys(players)[0]}`].win = true;
           //LE PLAYER IS WINNER
           console.log('GAUCHE A LA  GAGNÉ',players[`${Object.keys(players)[0]}`].win);

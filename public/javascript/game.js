@@ -10,8 +10,6 @@ const ballRadius = 2.5;
 let x = canvas.width/2;
 let y = canvas.height-30;
 
-let nodisplayball = false;
-
 
 
         // //SIZE CANVAS
@@ -34,18 +32,10 @@ let nodisplayball = false;
                         }
         });
 
-        socket.on('nodisplayball', data => {
-                console.log('nodisplayball : ',data)
-                nodisplayball = data;
-        });
-
 
         //BALL
         socket.on('ball', data => { 
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                if(nodisplayball === 0){
-                        
-                }else{
                         if(data != undefined){
                                 ctx.beginPath();
                                 ctx.arc(data.x, data.y, data.ballRadius, 0, Math.PI*2);
@@ -53,7 +43,6 @@ let nodisplayball = false;
                                 ctx.fill();
                                 ctx.closePath();
                         }
-                }
         });
 
         /*DROITE DE JOUER OU PAS */
@@ -75,6 +64,9 @@ let nodisplayball = false;
                 }
                 if(evt.code === "ArrowDown"){
                         socket.emit("playeur bas", 5);
+                }
+                if(evt.code === "ArrowRight"){
+                        socket.emit('startgame', 1);
                 }
         });
 

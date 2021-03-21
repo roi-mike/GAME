@@ -155,14 +155,18 @@ io.on('connection', socket => {
         socket.on('startgame', data => {
           startgame = data;
         })
-        if(players[`${Object.keys(players)[0]}`].win === true || players[`${Object.keys(players)[1]}`].win === true){
-          clearInterval(peint);
-        }{
-          if(startgame === 1){
-            ball.x += ball.dx;
-            ball.y += ball.dy;
+
+        if(players[socket.id]){
+          if(players[`${Object.keys(players)[0]}`].win === true || players[`${Object.keys(players)[1]}`].win === true){
+            clearInterval(peint);
+          }{
+            if(startgame === 1){
+              ball.x += ball.dx;
+              ball.y += ball.dy;
+            }
           }
         }
+        
       }
       
       io.emit('players',players);
@@ -231,11 +235,13 @@ io.on('connection', socket => {
 
       /*DETECTION  COLISSIONS PlAYERS ON BALL*/
 
-      if(players[socket.id].x < ball.x + ball.ballRadius &&
-        players[socket.id].x + 2.5 > ball.x &&
-        players[socket.id].y < ball.y + ball.ballRadius &&
-        players[socket.id].y + 20 > ball.y + ball.ballRadius){
-        ball.dx = -ball.dx;
+      if(players[socket.id]){
+        if(players[socket.id].x < ball.x + ball.ballRadius &&
+          players[socket.id].x + 2.5 > ball.x &&
+          players[socket.id].y < ball.y + ball.ballRadius &&
+          players[socket.id].y + 20 > ball.y + ball.ballRadius){
+          ball.dx = -ball.dx;
+        }
       }
     },1000/10);
 

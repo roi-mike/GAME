@@ -54,6 +54,14 @@ let y = canvas.height-30;
                 }
         });
 
+        socket.on("winright", data => {
+                console.log(data);
+        });
+
+        socket.on("winleft", data => {
+                console.log(data);
+        });
+
         
         
 

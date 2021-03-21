@@ -177,12 +177,12 @@ io.on('connection', socket => {
       /*VERIFIE SI LA BALLE TAPE A GAUCHE*/
       if(ball.x + ball.dx < 3 || ball.x + ball.dx < ball.ballRadius){
         //console.log('JE SUIS A GAUCHE');
-        if(players[`${Object.keys(players)[0]}`].score < 5 || players[`${Object.keys(players)[1]}`].score < 5){
           if(startgame === 1){
               ball.x = 300/2;
-              startgame = false
+              startgame = false;
+              console.log(players);
           }
-        }
+
         //console.log('LES CLES ', Object.keys(players)[0]);
         players[`${Object.keys(players)[1]}`].score += 1;
 
@@ -191,9 +191,12 @@ io.on('connection', socket => {
           players[`${Object.keys(players)[1]}`].win = true;
           //LE PLAYER RIGHT IS WINNER
           console.log('DROITE I LA  GAGNÉ',players[`${Object.keys(players)[1]}`].win);
+          console.log(players);
         }
 
-        
+        if(players[`${Object.keys(players)[1]}`].win === true){
+          socket.broadcast.emit('winright', 'GAUCHE PERDU DOMMAGE !');
+        }
       }
 
 
@@ -201,19 +204,23 @@ io.on('connection', socket => {
       if(ball.x + ball.dx > 299 || ball.x + ball.dx < ball.ballRadius){
         //console.log('JE SUIS A DROITE');
         players[`${Object.keys(players)[0]}`].score += 1;
-        if(players[`${Object.keys(players)[0]}`].score < 5 || players[`${Object.keys(players)[1]}`].score < 5){
+
           if(startgame === 1){
-            
               ball.x = 300/2;
               startgame = false;
+              console.log(players);
             }
-        }
         
         //CHECK IF THE PLAYER IS WINNER
         if(players[`${Object.keys(players)[0]}`].score === 5){
           players[`${Object.keys(players)[0]}`].win = true;
           //LE PLAYER IS WINNER
           console.log('GAUCHE A LA  GAGNÉ',players[`${Object.keys(players)[0]}`].win);
+          // socket.broadcast.emit('perdu', 'Dommage Vous avez perdu !');
+          console.log(players);
+        }
+        if(players[`${Object.keys(players)[0]}`].win === true){
+          socket.broadcast.emit('winleft', 'DROITE PERDU DOMMAGE !');
         }
       }
 

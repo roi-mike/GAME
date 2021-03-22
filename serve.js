@@ -134,6 +134,7 @@ app.get("/account/game/:idgame", (req, res) => {
 
 io.on('connection', socket => {
   if(customer.customergame){
+    console.log("PSEUDO --- ",pseudo);
     players[socket.id] = {};
     players[socket.id].name = pseudo;
     players[socket.id].win = false;
@@ -193,27 +194,29 @@ io.on('connection', socket => {
 
         //CHECK IF THE RIGHT PLAYER HAS WIN
         if(players[`${Object.keys(players)[1]}`].score === 5){
+          
           players[`${Object.keys(players)[1]}`].win = true;
           //LE PLAYER RIGHT IS WINNER
           console.log('DROITE I LA  GAGNÉ',players[`${Object.keys(players)[1]}`].win);
           io.emit('affichemessage',1);
           let newRecord = new PostsModel({
-            playerone: {
-              name: players[`${Object.keys(players)[0]}`],
-              win: players[`${Object.keys(players)[0]}`].win,
-              score: players[`${Object.keys(players)[0]}`].score
-            },
-            playertwo: {
-              name: players[`${Object.keys(players)[1]}`],
-              win: players[`${Object.keys(players)[1]}`].win,
-              score: players[`${Object.keys(players)[1]}`].score
-            }
+            playerone: [
+              players[`${Object.keys(players)[0]}`].name,
+              players[`${Object.keys(players)[0]}`].win,
+              players[`${Object.keys(players)[0]}`].score
+            ],
+            playertwo: [
+              players[`${Object.keys(players)[1]}`].name,
+              players[`${Object.keys(players)[1]}`].win,
+              players[`${Object.keys(players)[1]}`].score
+            ]
            });
           newRecord.save((err, docs) => {
               if (!err) res.send(docs);
               else console.log("Error creating new data : " + err);
             });
           console.log(players);
+          console.log("PSEUDO INFO : ",pseudo);
         }
 
         if(players[`${Object.keys(players)[1]}`].win === true){
@@ -241,12 +244,12 @@ io.on('connection', socket => {
           io.emit('affichemessage',1);
           let newRecord = new PostsModel({
               playerone: [
-                players[`${Object.keys(players)[0]}`],
+                players[`${Object.keys(players)[0]}`].name,
                 players[`${Object.keys(players)[0]}`].win,
                 players[`${Object.keys(players)[0]}`].score
               ],
               playertwo: [
-                players[`${Object.keys(players)[1]}`],
+                players[`${Object.keys(players)[1]}`].name,
                 players[`${Object.keys(players)[1]}`].win,
                 players[`${Object.keys(players)[1]}`].score
               ]

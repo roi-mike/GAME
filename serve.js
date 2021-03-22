@@ -195,6 +195,7 @@ io.on('connection', socket => {
           players[`${Object.keys(players)[1]}`].win = true;
           //LE PLAYER RIGHT IS WINNER
           console.log('DROITE I LA  GAGNÉ',players[`${Object.keys(players)[1]}`].win);
+          io.emit('affichemessage',1);
           console.log(players);
         }
 
@@ -220,6 +221,7 @@ io.on('connection', socket => {
           players[`${Object.keys(players)[0]}`].win = true;
           //LE PLAYER IS WINNER
           console.log('GAUCHE A LA  GAGNÉ',players[`${Object.keys(players)[0]}`].win);
+          io.emit('affichemessage',1);
           // socket.broadcast.emit('perdu', 'Dommage Vous avez perdu !');
           console.log(players);
         }

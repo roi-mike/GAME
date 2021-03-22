@@ -5,6 +5,21 @@ canvas.style.width = "100%";
 canvas.style.height = "100%";
 canvas.style.backgroundColor = "gray";
 var ctx = canvas.getContext("2d");
+const finnalgamemessage = document.querySelector(".finnal");
+const messageforfinnal = document.createElement("p");
+messageforfinnal.innerHTML = "C'est Fini ";
+messageforfinnal.style.fontSize = "40px";
+const retourligne = document.createElement("br");
+const retouraccueil = document.createElement("a");
+retouraccueil.style.backgroundColor = "gray";
+retouraccueil.style.borderRadius = "5px";
+retouraccueil.style.padding = "5px";
+retouraccueil.setAttribute("href","/");
+retouraccueil.innerHTML = "retour à l'acceuil";
+finnalgamemessage.appendChild(messageforfinnal);
+finnalgamemessage.appendChild(retourligne);
+finnalgamemessage.appendChild(retouraccueil);
+
 
 const ballRadius = 2.5;
 let x = canvas.width / 2;
@@ -41,12 +56,19 @@ socket.on("ball", (data) => {
   }
 });
 
+socket.on("affichemessage", data => {
+        if(data){
+                finnalgamemessage.style.visibility = "visible";
+                finnalgamemessage.style.opacity = "1";
+        }
+});
+
 /*DROITE DE JOUER OU PAS */
 socket.on("right", (data) => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   if (data !== undefined) {
-    ctx.font = "10px serif";
-    ctx.fillText("Attente du second joueur..", 10, 10);
+    ctx.font = "25px serif";
+    ctx.fillText("Attente du second joueur...", 5, canvas.height/2);
   }
 });
 

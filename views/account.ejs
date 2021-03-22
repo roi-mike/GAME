@@ -23,7 +23,11 @@
             </div>
             <div id="inscriptionpageindex">
                 <div id="scoreplayers">
-
+                    <ul id="listematch">
+                    <% for(var i=0; i<result.length; i++) {%>
+                        <li><%= result[i].playerone[0] %> <%= result[i].playerone[2] %> - <%= result[i].playertwo[0] %> <%= result[i].playertwo[2] %> </li>
+                     <% } %>
+                    </ul>
                 </div>
                 <div>
                     <p>Comment le jeu de Pong fonctionne : </p>

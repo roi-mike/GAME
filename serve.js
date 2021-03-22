@@ -90,15 +90,21 @@ app.post("/", (req, res) => {
 
 app.get('/account', (req,res)=>{
   if(req.session.nameplayeur){
-    res.render('account.ejs',{pseudoid: req.session.nameplayeur})
-  }else{
-    res.redirect('/');
-  }
-});
-
-app.get('/account/', (req,res)=>{
-  if(req.session.nameplayeur){
-    res.render('account.ejs',{pseudoid: req.session.nameplayeur})
+      PostsModel.find()
+      .exec()
+      .then(result =>{
+        if(result){
+          console.log('RESULTA',result)
+          res.render('account.ejs',{pseudoid: req.session.nameplayeur, result: result})
+        }
+      })
+      .catch(err =>{
+        console.log(err);
+        res.status(404).json({
+          error: err,
+        })
+      });
+    
   }else{
     res.redirect('/');
   }
@@ -212,8 +218,7 @@ io.on('connection', socket => {
             ]
            });
           newRecord.save((err, docs) => {
-              if (!err) res.send(docs);
-              else console.log("Error creating new data : " + err);
+            console.log("Error creating new data : " + err);
             });
           console.log(players);
           console.log("PSEUDO INFO : ",pseudo);

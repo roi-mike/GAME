@@ -22,18 +22,20 @@
                 </div>
             </div>
             <div id="inscriptionpageindex">
+                <p>PARIE TERMINÉ :</p>
                 <div id="scoreplayers">
+                    
                     <ul id="listematch">
                     <% for(var i=0; i<result.length; i++) {%>
-                        <li><%= result[i].playerone[0] %> <%= result[i].playerone[2] %> - <%= result[i].playertwo[0] %> <%= result[i].playertwo[2] %> </li>
+                        <li><%= result[i].playerone[0] %> <%= result[i].playerone[2] %> -- <%= result[i].playertwo[0] %> <%= result[i].playertwo[2] %> </li>
                      <% } %>
                     </ul>
                 </div>
                 <div>
-                    <p>Comment le jeu de Pong fonctionne : </p>
+                    <p>Les touche du jeu Pong : </p>
                     <p>Fléche droite &rarr; = lancer la balle sense aléatoire</p>
-                    <p>Fléche haut &uarr; = monter la bar du joueur</p>
-                    <p>Fléche bas &darr; = décendre la bar du joueur</p>
+                    <p>Fléche haut &uarr; = monter la barre du joueur</p>
+                    <p>Fléche bas &darr; = décendre la barre du joueur</p>
                 </div>
                 <div id="playgame">
                     <a href="/game">COMMENCER UNE PARTIE</a>

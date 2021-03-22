@@ -1,5 +1,3 @@
-const { text } = require("body-parser");
-
 const randongame = document.querySelector("#playgame>a");
 const gamepang = document.querySelector("#gamepang>a");
 const idgamerandom = Math.floor(Math.random()*100);

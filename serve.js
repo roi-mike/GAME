@@ -45,18 +45,18 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(cors());
+let pseudo;
 
 //const postsRoutes = require('./routes/postsControler');-------
 //------------------------------------------------------
 const { PostsModel } = require("./models/postsModels");
-const { connected } = require('process');
 
 app.get("/", (req, res) => {
   res.render("index.ejs", {erreurpseudo: false});
 });
 
 app.post("/", (req, res) => {
-  let pseudo = req.body.pseudo;
+  pseudo = req.body.pseudo;
   if (pseudo) {
     customer.customergame = true;
     PostsModel.findOne({pseudoID : pseudo}, " pseudoID ")
@@ -135,6 +135,7 @@ app.get("/account/game/:idgame", (req, res) => {
 io.on('connection', socket => {
   if(customer.customergame){
     players[socket.id] = {};
+    players[socket.id].name = pseudo;
     players[socket.id].win = false;
     players[socket.id].y = 10;
     players[socket.id].x = (Object.keys(players).indexOf(socket.id) === 0) ? 10 : 285 ;
@@ -196,6 +197,22 @@ io.on('connection', socket => {
           //LE PLAYER RIGHT IS WINNER
           console.log('DROITE I LA  GAGNÉ',players[`${Object.keys(players)[1]}`].win);
           io.emit('affichemessage',1);
+          let newRecord = new PostsModel({
+            playerone: {
+              name: players[`${Object.keys(players)[0]}`],
+              win: players[`${Object.keys(players)[0]}`].win,
+              score: players[`${Object.keys(players)[0]}`].score
+            },
+            playertwo: {
+              name: players[`${Object.keys(players)[1]}`],
+              win: players[`${Object.keys(players)[1]}`].win,
+              score: players[`${Object.keys(players)[1]}`].score
+            }
+           });
+          newRecord.save((err, docs) => {
+              if (!err) res.send(docs);
+              else console.log("Error creating new data : " + err);
+            });
           console.log(players);
         }
 
@@ -222,6 +239,25 @@ io.on('connection', socket => {
           //LE PLAYER IS WINNER
           console.log('GAUCHE A LA  GAGNÉ',players[`${Object.keys(players)[0]}`].win);
           io.emit('affichemessage',1);
+          let newRecord = new PostsModel({
+              playerone: [
+                players[`${Object.keys(players)[0]}`],
+                players[`${Object.keys(players)[0]}`].win,
+                players[`${Object.keys(players)[0]}`].score
+              ],
+              playertwo: [
+                players[`${Object.keys(players)[1]}`],
+                players[`${Object.keys(players)[1]}`].win,
+                players[`${Object.keys(players)[1]}`].score
+              ]
+             });
+          newRecord.save((err, docs) => {
+              if (!err){
+
+              }else{
+                console.log("Error creating new data : " + err);
+              } 
+             }); 
           // socket.broadcast.emit('perdu', 'Dommage Vous avez perdu !');
           console.log(players);
         }

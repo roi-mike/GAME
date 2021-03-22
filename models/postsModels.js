@@ -3,13 +3,13 @@ const mongoose = require("mongoose");
 const PostsModel = mongoose.model(
     "pong-ificop",
     {
-        pseudoID:{
-            type:String,
+        playerone:{
+            type:Array,
             required:true
         },
-        date:{
-            type:Date,
-            default: Date.now
+        playertwo:{
+            type:Array,
+            required: true
         }
     },
     "pong"

@@ -86,7 +86,7 @@ div#info_game{
 
 /*INSCRIPTION PAGE INDEX*/
 div#inscriptionpageindex{
-    flex-grow: 9;
+    flex-grow: 5.5;
     background-color:rgb(70, 66, 66);
 }
 
@@ -119,11 +119,11 @@ th{
 
 /*FOOTEUR*/
 footer{
-    flex-grow: 0.1;
+    flex-grow: 4.6;
     width: 100%;
     background-color: rgb(85, 83, 85);
     text-align: center;
     font-size: 7px;
-    padding: 3rem 0rem;
+    padding: 1.3rem 0;
     font-size: 12px;
 }

@@ -138,8 +138,10 @@ io.on('connection', socket => {
     var peint = setInterval(function(){
       /*Verif numb players connected if player is egal one player on start the parti*/
       if(Object.keys(players).length === 1){
+        io.emit("right", 0);
         // console.log("Attente du second joueur..");
       }
+      
       /*Verif numb players if there is more one player we start the game */
       if(Object.keys(players).length != 1){
         io.emit('ball',ball);

@@ -15,6 +15,7 @@ app.use(session({
     maxAge: (1000*60)*4
   }
 }));
+let destroysession = false;
 
 require('./models/dbConfig');
 
@@ -68,8 +69,7 @@ app.post("/", (req, res) => {
         req.session.nameplayeur = pseudo;
         console.log("PREMIERE INFO : ", pseudo);
   
-        res.redirect(301,`/account`)
-        //res.redirect(301, `/game/idgame-${idgamerandom}`)   
+        res.redirect(301,`/account`);  
       }
     })
     .catch(err =>{
@@ -116,6 +116,10 @@ app.get("/account/game/:idgame", (req, res) => {
     console.log('VOTRE SESSION ', req.session.nameplayeur);
     res.render("game.ejs", { client: req.session.nameplayeur});
     // établissement de la connexion SOCKET.IO
+
+    if(destroysession){
+      req.session.destroy();
+    }
   }else{
     res.redirect('/');
   }
@@ -290,6 +294,7 @@ io.on('connection', socket => {
   socket.on('disconnect', function(){
     ball.x = 300/2;
     ball.y = 100;
+    destroysession = true;
     customer.customergame = false;
     delete players[socket.id];
     console.log('DECONNECT : ', Object.keys(players))

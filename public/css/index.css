@@ -82,15 +82,9 @@ main{
 #inscriptionpageindex-new{
     padding: 5rem;
     margin: auto;
+    text-align: center;
 }
 /*INSCRIPTION PAGE INDEX*/
-div#inscriptionpageindex{
-    display: flex;
-    flex-grow: 9;
-    background-color:rgb(70, 66, 66);
-    justify-content: center;
-    align-items: center;
-}
 
 input{
     height: 50px;

@@ -100,8 +100,17 @@ div#playgame{
     margin-top: 40px;
     padding-top: 5px;
     padding-bottom: 5px;
-    background-color: gray;
+    background-color:rgb(70, 66, 66);
     text-align: center;
+}
+
+#submit, button{
+    height:50px;
+    width: 250px;
+    border: none;
+    background: grey;
+    border-radius: 5px;
+    color: #fff;
 }
 
 /*FOOTEUR*/
@@ -111,6 +120,6 @@ footer{
     background-color: rgb(85, 83, 85);
     text-align: center;
     font-size: 7px;
-    padding: 3rem;
+    padding: 3rem 0rem;
     font-size: 12px;
 }

@@ -86,6 +86,10 @@ main{
 }
 /*INSCRIPTION PAGE INDEX*/
 
+img{
+    width: 150px;
+}
+
 input{
     height: 50px;
     width: 250px;

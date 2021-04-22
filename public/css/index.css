@@ -125,6 +125,7 @@ span#quitter{
 input{
     height: 50px;
     width: 250px;
+    font-size: 25px;
     cursor: pointer;
 }
 /*FOOTEUR*/

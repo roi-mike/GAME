@@ -125,9 +125,10 @@ span#quitter{
 input{
     height: 50px;
     width: 250px;
-    font-size: 25px;
+    font-size: 15px;
     cursor: pointer;
 }
+
 /*FOOTEUR*/
 footer{
     flex-grow: 0.1;

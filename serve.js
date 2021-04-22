@@ -67,13 +67,11 @@ app.post("/", (req, res) => {
         res.render("index.ejs",{ erreurpseudo : " Deja inscrit " });
       }else{
         req.session.nameplayeur = pseudo;
-        console.log("PREMIERE INFO : ", pseudo);
   
         res.redirect(301,`/account`);  
       }
     })
     .catch(err =>{
-      console.log(err);
       res.status(404).json({
         error: err,
       })
@@ -94,12 +92,10 @@ app.get('/account', (req,res)=>{
       .exec()
       .then(result =>{
         if(result){
-          console.log('RESULTA',result)
           res.render('account.ejs',{pseudoid: req.session.nameplayeur, result: result})
         }
       })
       .catch(err =>{
-        console.log(err);
         res.status(404).json({
           error: err,
         })
@@ -112,8 +108,6 @@ app.get('/account', (req,res)=>{
 
 app.get("/account/game/:idgame", (req, res) => {
   if(req.session.nameplayeur){
-    //console.log(req.session)
-    console.log('VOTRE SESSION ', req.session.nameplayeur);
     res.render("game.ejs", { client: req.session.nameplayeur});
     // établissement de la connexion SOCKET.IO
 
@@ -180,7 +174,6 @@ io.on('connection', socket => {
           if(startgame === 1){
               ball.x = 300/2;
               startgame = false;
-              console.log(players);
           }
 
         //console.log('LES CLES ', Object.keys(players)[0]);
@@ -208,8 +201,6 @@ io.on('connection', socket => {
           newRecord.save((err, docs) => {
             console.log("Error creating new data : " + err);
             });
-          console.log(players);
-          console.log("PSEUDO INFO : ",pseudo);
         }
 
         if(players[`${Object.keys(players)[1]}`].win === true){
@@ -226,14 +217,12 @@ io.on('connection', socket => {
           if(startgame === 1){
               ball.x = 300/2;
               startgame = false;
-              console.log(players);
             }
         
         //CHECK IF THE PLAYER IS WINNER
         if(players[`${Object.keys(players)[0]}`].score === 5){
           players[`${Object.keys(players)[0]}`].win = true;
           //LE PLAYER IS WINNER
-          console.log('GAUCHE A LA  GAGNÉ',players[`${Object.keys(players)[0]}`].win);
           io.emit('affichemessage',1);
           let newRecord = new PostsModel({
               playerone: [
@@ -254,8 +243,6 @@ io.on('connection', socket => {
                 console.log("Error creating new data : " + err);
               } 
              }); 
-          // socket.broadcast.emit('perdu', 'Dommage Vous avez perdu !');
-          console.log(players);
         }
         if(players[`${Object.keys(players)[0]}`].win === true){
           socket.broadcast.emit('winleft', 'DROITE PERDU DOMMAGE !');
@@ -286,8 +273,6 @@ io.on('connection', socket => {
     socket.on('playeur haut',data => {
       players[socket.id].y-=data;
     });
-
-    console.log('IL Y A UNE CONNECTION', players);
     
   }
   socket.on('disconnect', function(){
@@ -296,8 +281,6 @@ io.on('connection', socket => {
     destroysession = true;
     customer.customergame = false;
     delete players[socket.id];
-    console.log('DECONNECT : ', Object.keys(players))
-    console.log('DECONNECTION !');
   });
 });
 

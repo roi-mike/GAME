@@ -4,9 +4,6 @@
     padding: 0;
     text-decoration: none;
 }
-input{
-    color: black;
-}
 body{
     height: 100vh;
     width: 100%;
@@ -100,6 +97,15 @@ input{
     width: 250px;
     font-size: 15px;
     cursor: pointer;
+}
+
+input[type=submit]{
+    border: none;
+    border-radius: 5px;
+    background: grey;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
 }
 
 /*FOOTEUR*/

@@ -130,7 +130,7 @@ io.on('connection', socket => {
   if(customer.customergame){
     players[socket.id] = {};
     players[socket.id].name = pseudo;
-    players[socket.id].name_pos_y = 15;
+    players[socket.id].name_pos_y = 25;
     players[socket.id].win = false;
     players[socket.id].y = 10;
     players[socket.id].x = (Object.keys(players).indexOf(socket.id) === 0) ? 10 : 285 ;

@@ -112,6 +112,10 @@ div#playgame{
     border-radius: 5px;
     color: #fff;
 }
+th{
+    border: 1px solid whites;
+    margin-right: 2px;
+}
 
 /*FOOTEUR*/
 footer{

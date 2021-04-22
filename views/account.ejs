@@ -10,13 +10,33 @@
     <div id="container" >
         <main>
             <div id="inscriptionpageindex">
-                <p>PARIE TERMINÉ :</p>
+                <h1 style="text-align:center">HONDI PONG</h1>
                 <div id="scoreplayers">
-                    <ul id="listematch">
-                    <% for(var i=0; i<result.length; i++) {%>
-                        <li><%= result[i].playerone[0] %> <%= result[i].playerone[2] %> -- <%= result[i].playertwo[0] %> <%= result[i].playertwo[2] %> </li>
-                     <% } %>
-                    </ul>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th colspan="8">PARTIE TERMINE</th>
+                            </tr>
+                           <tr>
+                                <th colspan="1">Joueur 1</th>
+                                 <th colspan="1">Points</th>
+                                 <th colspan="1">Points</th>
+                                 <th colspan="1">Joueur 2</th>
+                                 <th colspan="1">Temps passé </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% for(var i=0; i<result.length; i++) {%>
+                                <tr>
+                                    <td><%= result[i].playerone[0] %></td>
+                                    <td><%= result[i].playerone[2] %></td>
+                                    <td><%= result[i].playertwo[2] %></td>
+                                    <td><%= result[i].playertwo[0] %></td>
+                                    <td>50 secondes</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>                    
                 </div>
                 <div id="info_game">
                     <p>Les touches du jeu Pong : </p>

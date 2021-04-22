@@ -12,7 +12,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie:{
-    maxAge: (1000*60)*4
+    maxAge: (1000*60)*5
   }
 }));
 let destroysession = false;
@@ -128,7 +128,6 @@ app.get("/account/game/:idgame", (req, res) => {
 
 io.on('connection', socket => {
   if(customer.customergame){
-    console.log("PSEUDO --- ",pseudo);
     players[socket.id] = {};
     players[socket.id].name = pseudo;
     players[socket.id].name_pos_y = 15;

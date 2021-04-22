@@ -39,7 +39,7 @@ socket.on("players", (data) => {
       ctx.fillRect(data[id].x, data[id].y, 2.5, 20);
 
       ctx.font = "10px serif";
-      ctx.fillText(data[id].name, data[id].scoreX +20, data[id].name_pos_y);
+      ctx.fillText(data[id].name, data[id].scoreX -20, data[id].name_pos_y);
 
       ctx.font = "20px serif";
       ctx.fillText(data[id].score, data[id].scoreX, data[id].scoreY);

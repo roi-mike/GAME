@@ -8,19 +8,7 @@
 </head>
 <body>
     <div id="container" >
-        <header>
-            <%- include("./base.static.view.ejs"); %>
-        </header>
         <main>
-            <div id="presentationpageindex">
-                <p>Jeux En Cours</p>
-                <div id="listesgameencours">
-                    <div id="jeuencours" >
-                        <span id="jeuencoursnomjouer">LE JOUEUR</span>
-                        <span id="able"></span>
-                    </div>
-                </div>
-            </div>
             <div id="inscriptionpageindex">
                 <p>PARIE TERMINÉ :</p>
                 <div id="scoreplayers">
@@ -31,8 +19,8 @@
                      <% } %>
                     </ul>
                 </div>
-                <div>
-                    <p>Les touche du jeu Pong : </p>
+                <div id="info_game">
+                    <p>Les touches du jeu Pong : </p>
                     <p>Fléche droite &rarr; = lancer la balle sense aléatoire</p>
                     <p>Fléche haut &uarr; = monter la barre du joueur</p>
                     <p>Fléche bas &darr; = décendre la barre du joueur</p>

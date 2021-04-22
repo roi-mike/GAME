@@ -9,15 +9,6 @@
 <body>
     <div id="container" >
         <main>
-            <div id="presentationpageindex">
-                <p>Jeux En Cours</p>
-                <div id="listesgameencours">
-                    <div id="jeuencours" >
-                        <span id="jeuencoursnomjouer">LE JOUEUR </span>
-                        <span id="able"></span>
-                    </div>
-                </div>
-            </div>
             <div id="inscriptionpageindex">
                 <%if( erreurpseudo ){%>
                     <div><%- erreurpseudo %></div>
@@ -28,8 +19,8 @@
                     <span id="quitter">X</span>
                 </div>
                 <form action="/" method="post">
-                    <input name="pseudo" type="text" placeholder="votre pseudo" required>
-                    <input type="submit" value="INSCRIPTION">
+                    <input name="pseudo" type="text" placeholder="votre pseudo" />
+                    <input type="submit" value="Commencer à jouer" />
                 </form>
             </div>
         </main>

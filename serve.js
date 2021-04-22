@@ -12,7 +12,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie:{
-    maxAge: (1000*60)*2
+    maxAge: (1000*60)*4
   }
 }));
 
@@ -110,22 +110,6 @@ app.get('/account', (req,res)=>{
   }
 });
 
-app.get("/tchat", (req, res) => {
-  var title = "TCHAT";
-  res.render("tchat.ejs", { title: title });
-});
-
-app.get("/game", (req, res) => {
-  if(req.session.nameplayeur){
-    console.log(req.session)
-    console.log('VOTRE SESSION ', req.session.nameplayeur);
-    var title = "GAME SAMUEL";
-    res.render("game.ejs", { client: req.session.nameplayeur ,title: title });
-  }else{
-    res.redirect('/');
-  }
-});
-
 app.get("/account/game/:idgame", (req, res) => {
   if(req.session.nameplayeur){
     //console.log(req.session)
@@ -143,6 +127,7 @@ io.on('connection', socket => {
     console.log("PSEUDO --- ",pseudo);
     players[socket.id] = {};
     players[socket.id].name = pseudo;
+    players[socket.id].name_pos_y = 15;
     players[socket.id].win = false;
     players[socket.id].y = 10;
     players[socket.id].x = (Object.keys(players).indexOf(socket.id) === 0) ? 10 : 285 ;
@@ -153,10 +138,8 @@ io.on('connection', socket => {
     var peint = setInterval(function(){
       /*Verif numb players connected if player is egal one player on start the parti*/
       if(Object.keys(players).length === 1){
-        io.emit("right", 0);
         // console.log("Attente du second joueur..");
       }
-      
       /*Verif numb players if there is more one player we start the game */
       if(Object.keys(players).length != 1){
         io.emit('ball',ball);

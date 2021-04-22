@@ -79,11 +79,10 @@ span#able{
         background-color: rgb(163, 162, 162);
     }
 }
-
-
-
-
-
+div#info_game{
+    text-align: center;
+    font-size: 23px;
+}
 
 /*INSCRIPTION PAGE INDEX*/
 div#inscriptionpageindex{

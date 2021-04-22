@@ -79,12 +79,13 @@ span#able{
         background-color: rgb(163, 162, 162);
     }
 }
-
-
-
-
-
-
+main{
+    background-color: rgb(70, 66, 66);
+}
+#inscriptionpageindex-new{
+    padding: 5rem;
+    margin: auto;
+}
 /*INSCRIPTION PAGE INDEX*/
 div#inscriptionpageindex{
     display: flex;

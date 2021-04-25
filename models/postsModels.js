@@ -10,6 +10,10 @@ const PostsModel = mongoose.model(
         playertwo:{
             type:Array,
             required: true
+        },
+        tempsgame : {
+            type: String,
+            required : true,
         }
     },
     "pong"

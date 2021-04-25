@@ -24,12 +24,21 @@ finnalgamemessage.appendChild(retouraccueil);
 const ballRadius = 2.5;
 let x = canvas.width / 2;
 let y = canvas.height - 30;
-
+let displaytemps = '';
 // //SIZE CANVAS
 // socket.emit('canvas size', {
 //         canvaswidth: x,
 //         canvasheight: y
 // })
+
+socket.on('tempsgame', (data) => {
+  if(data.compteur != undefined && data.secondes != undefined &&  data.minutes != undefined && data.heure != undefined){
+    displaytemps = data.heure+' : '+data.minutes +' : '+ data.secondes;
+    ctx.font = "10px serif";
+    ctx.fillText(displaytemps, canvas.width / 2, canvas.height);
+  }
+  
+});
 
 //PLAYER 1 et 2
 socket.on("players", (data) => {
@@ -43,46 +52,36 @@ socket.on("players", (data) => {
 
       ctx.font = "20px serif";
       ctx.fillText(data[id].score, data[id].scoreX, data[id].scoreY);
+      
     }
   }
 });
 
 //BALL
 socket.on("ball", (data) => {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  if (data != undefined) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
     ctx.arc(data.x, data.y, data.ballRadius, 0, Math.PI * 2);
     ctx.fillStyle = "rgb(256, 256, 256)";
     ctx.fill();
     ctx.closePath();
-  }
-});
-
-socket.on("affichemessage", data => {
-        if(data){
-                finnalgamemessage.style.visibility = "visible";
-                finnalgamemessage.style.opacity = "1";
-        }
 });
 
 /*DROITE DE JOUER OU PAS */
 socket.on("right", (data) => {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
   if (data !== undefined) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.font = "25px serif";
     ctx.fillText("Attente du second joueur...", 5, canvas.height/2);
   }
 });
 
-socket.on("winright", (data) => {
-  console.log(data);
+socket.on("affichemessage", data => {
+  if(data){
+    finnalgamemessage.style.visibility = "visible";
+    finnalgamemessage.style.opacity = "1";
+   }
 });
-
-socket.on("winleft", (data) => {
-  console.log(data);
-});
-
 //MOVE PLAYERS
 document.addEventListener("keydown", function (evt) {
   if (evt.code === "ArrowUp") {

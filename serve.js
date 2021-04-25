@@ -16,6 +16,12 @@ app.use(session({
   }
 }));
 let destroysession = false;
+let tempsgame = {
+  compteur : 00,
+  secondes : 00,
+  minutes : 00,
+  heure : 00
+}
 
 require('./models/dbConfig');
 
@@ -35,8 +41,8 @@ let ball = {
   ballRadius: 1.6,
   x : 300/2,
   y : 100,
-  dx : 1.8,
-  dy : -1.8,
+  dx : 1.3,
+  dy : -1.3,
 }
 
 app.use('/static', express.static(__dirname + '/public'));
@@ -133,6 +139,8 @@ io.on('connection', socket => {
     players[socket.id].scoreX = (Object.keys(players).indexOf(socket.id) === 0) ? 120 : 170 ;
     
     var peint = setInterval(function(){
+ 
+
       /*Verif numb players connected if player is egal one player on start the parti*/
       if(Object.keys(players).length === 1){
         io.emit("right", 0);
@@ -141,7 +149,26 @@ io.on('connection', socket => {
       
       /*Verif numb players if there is more one player we start the game */
       if(Object.keys(players).length != 1){
-        io.emit('ball',ball);
+
+          io.emit('ball',ball);
+        /*Compteur de tour par seconde 60*/
+        tempsgame.compteur += 1;
+
+        if(tempsgame.compteur == 31){
+          tempsgame.compteur = 00;
+          tempsgame.secondes = tempsgame.secondes + 1;
+          if(tempsgame.secondes === 60){
+            tempsgame.secondes = 00;
+            tempsgame.minutes += 1;
+            if(tempsgame.minutes === 60){
+              tempsgame.minutes = 00;
+              tempsgame.heure += 1;
+            }
+          }
+        }
+
+        socket.emit('tempsgame', tempsgame);
+
         socket.on('startgame', data => {
           startgame = data;
         })
@@ -158,7 +185,8 @@ io.on('connection', socket => {
         }
         
       }
-      
+
+
       io.emit('players',players);
 
       
@@ -190,21 +218,19 @@ io.on('connection', socket => {
             playerone: [
               players[`${Object.keys(players)[0]}`].name,
               players[`${Object.keys(players)[0]}`].win,
-              players[`${Object.keys(players)[0]}`].score
+              players[`${Object.keys(players)[0]}`].score,
+              ,
             ],
             playertwo: [
               players[`${Object.keys(players)[1]}`].name,
               players[`${Object.keys(players)[1]}`].win,
-              players[`${Object.keys(players)[1]}`].score
-            ]
+              players[`${Object.keys(players)[1]}`].score,
+            ],
+            tempsgame : tempsgame.minutes +" : "+tempsgame.secondes, 
            });
           newRecord.save((err, docs) => {
             console.log("Error creating new data : " + err);
             });
-        }
-
-        if(players[`${Object.keys(players)[1]}`].win === true){
-          socket.broadcast.emit('winright', 'GAUCHE PERDU DOMMAGE !');
         }
       }
 
@@ -228,13 +254,14 @@ io.on('connection', socket => {
               playerone: [
                 players[`${Object.keys(players)[0]}`].name,
                 players[`${Object.keys(players)[0]}`].win,
-                players[`${Object.keys(players)[0]}`].score
+                players[`${Object.keys(players)[0]}`].score,
               ],
               playertwo: [
                 players[`${Object.keys(players)[1]}`].name,
                 players[`${Object.keys(players)[1]}`].win,
-                players[`${Object.keys(players)[1]}`].score
-              ]
+                players[`${Object.keys(players)[1]}`].score,
+              ],
+              tempsgame : tempsgame.minutes +" : "+tempsgame.secondes,
              });
           newRecord.save((err, docs) => {
               if (!err){
@@ -243,9 +270,6 @@ io.on('connection', socket => {
                 console.log("Error creating new data : " + err);
               } 
              }); 
-        }
-        if(players[`${Object.keys(players)[0]}`].win === true){
-          socket.broadcast.emit('winleft', 'DROITE PERDU DOMMAGE !');
         }
       }
 
@@ -264,7 +288,7 @@ io.on('connection', socket => {
           ball.dx = -ball.dx;
         }
       }
-    },1000/10);
+    },60);
 
     socket.on('playeur bas',data => {
       players[socket.id].y+=data;

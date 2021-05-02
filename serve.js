@@ -12,7 +12,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie:{
-    maxAge: (1000*60)*4
+    maxAge: (1000*60)*15
   }
 }));
 let redirect = false;
@@ -86,13 +86,11 @@ app.post("/", (req, res) => {
         req.session.nameplayeur = pseudo;
 
         let newSave = new UsersPlayGame({
-          nameplayer:pseudo, 
+          nameplayer: pseudo.toLowerCase(), 
         });
         newSave.save(function (err, data) {
           if(err){console.log('PAS INSCRIT')}
           })
-
-  
         res.redirect(301,`/account`);  
       }
     })
@@ -118,7 +116,7 @@ app.get('/account', (req,res)=>{
       .exec()
       .then(result =>{
         if(result){
-          res.render('account.ejs',{pseudoid: req.session.nameplayeur, result: result})
+          res.render('account.ejs',{pseudoid: req.session.nameplayeur.toLowerCase(), result: result})
         }
       })
       .catch(err =>{
@@ -127,29 +125,31 @@ app.get('/account', (req,res)=>{
         })
       });
   }else{
-    res.redirect('/');
+  res.setHeader('Content-Type', 'text/html');
+  res.redirect('/');
+  res.end();
   }
 });
 
-app.get("/account/game/:idgame", (req, res, next) => {
-  console.log('GAME !!')
-  
+app.get("/account/game/", (req, res, next) => {
   if(req.session.nameplayeur){
     if(redirect){
       console.log('REDIRECTION');
       res.setHeader('Content-Type', 'text/html');
-      res.redirect(301,'/account');
+      res.status(302);
+      res.redirect('/account');
+      res.end();
       redirect = false;
       return next();
     }
+    res.setHeader('Content-Type', 'text/html');
     res.render("game.ejs", { client: req.session.nameplayeur});
-    // établissement de la connexion SOCKET.IO
-    
-    
-    console.log(req.session)
-    
+    res.end();
   }else{
+    res.setHeader('Content-Type', 'text/html');
     res.redirect('/');
+    res.end();
+    return next();
   }
   
 });
@@ -158,7 +158,10 @@ app.get('/disconect', (req, res)=>{
   console.log('DECONNEXION SAMUEL');
   if(req.session.nameplayeur){
     req.session.destroy();
+
+    res.setHeader('Content-Type', 'text/html');
     res.redirect('/');
+    res.end();
   }
 });
 
@@ -166,7 +169,7 @@ io.on('connection', socket => {
 
   if(customer.customergame){
     players[socket.id] = {};
-    players[socket.id].name = pseudo;
+    players[socket.id].name = pseudo.toLowerCase();
     players[socket.id].name_pos_y = 25;
     players[socket.id].win = false;
     players[socket.id].y = 10;
@@ -223,7 +226,7 @@ io.on('connection', socket => {
         
       }
 
-
+      //Envoyer les joueurs
       io.emit('players',players);
 
       
@@ -250,7 +253,10 @@ io.on('connection', socket => {
           players[`${Object.keys(players)[1]}`].win = true;
           //LE PLAYER RIGHT IS WINNER
           console.log('DROITE I LA  GAGNÉ',players[`${Object.keys(players)[1]}`].win);
+          //Message annonce partie terminé
           io.emit('affichemessage',1);
+
+          //inscription dans la base de donne
           let newRecord = new PostsModel({
             playerone: [
               players[`${Object.keys(players)[0]}`].name.toLowerCase(),
@@ -280,13 +286,16 @@ io.on('connection', socket => {
           if(startgame === 1){
               ball.x = 300/2;
               startgame = false;
-            }
+          }
         
         //CHECK IF THE PLAYER IS WINNER
         if(players[`${Object.keys(players)[0]}`].score === 5){
           players[`${Object.keys(players)[0]}`].win = true;
           //LE PLAYER IS WINNER
+          //Message annonce partie terminé
           io.emit('affichemessage',1);
+
+          //inscription dans la base de donne
           let newRecord = new PostsModel({
               playerone: [
                 players[`${Object.keys(players)[0]}`].name.toLowerCase(),
@@ -340,6 +349,7 @@ io.on('connection', socket => {
     ball.x = 300/2;
     ball.y = 100;
     redirect = true;
+
     customer.customergame = false;
     delete players[socket.id];
     console.log('DECONNEXION ! ')

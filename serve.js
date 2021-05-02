@@ -12,15 +12,15 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie:{
-    maxAge: (1000*60)*5
+    maxAge: (1000*60)*4
   }
 }));
-let destroysession = false;
+let redirect = false;
 let tempsgame = {
-  compteur : 00,
-  secondes : 00,
-  minutes : 00,
-  heure : 00
+  compteur : 0,
+  secondes : 0,
+  minutes : 0,
+  heure : 0
 }
 
 require('./models/dbConfig');
@@ -56,23 +56,42 @@ let pseudo;
 
 //const postsRoutes = require('./routes/postsControler');-------
 //------------------------------------------------------
+const { UsersPlayGame } = require("./models/users_play_game");
 const { PostsModel } = require("./models/postsModels");
 
-app.get("/", (req, res) => {
-  res.render("index.ejs", {erreurpseudo: false});
+app.get("/", (req, res, next) => {
+  console.log('INFORMATION : '+req.session.nameplayeur);
+  if(req.session.nameplayeur){
+    res.setHeader('Content-Type', 'text/html');
+    res.redirect(302,"/account");
+    return next();
+  }else{
+    res.status(200).render("index.ejs", {erreurpseudo: false});
+  }
+  // UsersPlayGame.find({},function (err, data) {
+  //   //console.log('RESULT ', data);
+  //   })
 });
 
 app.post("/", (req, res) => {
   pseudo = req.body.pseudo;
   if (pseudo) {
     customer.customergame = true;
-    PostsModel.findOne({pseudoID : pseudo}, " pseudoID ")
+    UsersPlayGame.findOne({nameplayer : pseudo.toLowerCase()})
     .exec()
-    .then(result =>{
+    .then(result => {
       if(result != null ){
-        res.render("index.ejs",{ erreurpseudo : " Deja inscrit " });
+        res.render("index.ejs",{ erreurpseudo : " Pseudo déjà utilisé " });
       }else{
         req.session.nameplayeur = pseudo;
+
+        let newSave = new UsersPlayGame({
+          nameplayer:pseudo, 
+        });
+        newSave.save(function (err, data) {
+          if(err){console.log('PAS INSCRIT')}
+          })
+
   
         res.redirect(301,`/account`);  
       }
@@ -94,6 +113,7 @@ app.post("/", (req, res) => {
 
 app.get('/account', (req,res)=>{
   if(req.session.nameplayeur){
+    console.log('SESSION :', req.session.nameplayeur);
       PostsModel.find()
       .exec()
       .then(result =>{
@@ -106,27 +126,44 @@ app.get('/account', (req,res)=>{
           error: err,
         })
       });
-    
   }else{
     res.redirect('/');
   }
 });
 
-app.get("/account/game/:idgame", (req, res) => {
+app.get("/account/game/:idgame", (req, res, next) => {
+  console.log('GAME !!')
+  
   if(req.session.nameplayeur){
+    if(redirect){
+      console.log('REDIRECTION');
+      res.setHeader('Content-Type', 'text/html');
+      res.redirect(301,'/account');
+      redirect = false;
+      return next();
+    }
     res.render("game.ejs", { client: req.session.nameplayeur});
     // établissement de la connexion SOCKET.IO
-
-    if(destroysession){
-      req.session.destroy();
-    }
+    
+    
+    console.log(req.session)
+    
   }else{
     res.redirect('/');
   }
   
 });
 
+app.get('/disconect', (req, res)=>{
+  console.log('DECONNEXION SAMUEL');
+  if(req.session.nameplayeur){
+    req.session.destroy();
+    res.redirect('/');
+  }
+});
+
 io.on('connection', socket => {
+
   if(customer.customergame){
     players[socket.id] = {};
     players[socket.id].name = pseudo;
@@ -155,13 +192,13 @@ io.on('connection', socket => {
         tempsgame.compteur += 1;
 
         if(tempsgame.compteur == 31){
-          tempsgame.compteur = 00;
+          tempsgame.compteur = 0;
           tempsgame.secondes = tempsgame.secondes + 1;
           if(tempsgame.secondes === 60){
-            tempsgame.secondes = 00;
+            tempsgame.secondes = 0;
             tempsgame.minutes += 1;
             if(tempsgame.minutes === 60){
-              tempsgame.minutes = 00;
+              tempsgame.minutes = 0;
               tempsgame.heure += 1;
             }
           }
@@ -216,13 +253,13 @@ io.on('connection', socket => {
           io.emit('affichemessage',1);
           let newRecord = new PostsModel({
             playerone: [
-              players[`${Object.keys(players)[0]}`].name,
+              players[`${Object.keys(players)[0]}`].name.toLowerCase(),
               players[`${Object.keys(players)[0]}`].win,
               players[`${Object.keys(players)[0]}`].score,
               ,
             ],
             playertwo: [
-              players[`${Object.keys(players)[1]}`].name,
+              players[`${Object.keys(players)[1]}`].name.toLowerCase(),
               players[`${Object.keys(players)[1]}`].win,
               players[`${Object.keys(players)[1]}`].score,
             ],
@@ -252,12 +289,12 @@ io.on('connection', socket => {
           io.emit('affichemessage',1);
           let newRecord = new PostsModel({
               playerone: [
-                players[`${Object.keys(players)[0]}`].name,
+                players[`${Object.keys(players)[0]}`].name.toLowerCase(),
                 players[`${Object.keys(players)[0]}`].win,
                 players[`${Object.keys(players)[0]}`].score,
               ],
               playertwo: [
-                players[`${Object.keys(players)[1]}`].name,
+                players[`${Object.keys(players)[1]}`].name.toLowerCase(),
                 players[`${Object.keys(players)[1]}`].win,
                 players[`${Object.keys(players)[1]}`].score,
               ],
@@ -302,9 +339,10 @@ io.on('connection', socket => {
   socket.on('disconnect', function(){
     ball.x = 300/2;
     ball.y = 100;
-    destroysession = true;
+    redirect = true;
     customer.customergame = false;
     delete players[socket.id];
+    console.log('DECONNEXION ! ')
   });
 });
 

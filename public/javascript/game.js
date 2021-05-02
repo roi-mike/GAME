@@ -30,14 +30,12 @@ let displaytemps = '';
 //         canvaswidth: x,
 //         canvasheight: y
 // })
-
 socket.on('tempsgame', (data) => {
-  if(data.compteur != undefined && data.secondes != undefined &&  data.minutes != undefined && data.heure != undefined){
-    displaytemps = data.heure+' : '+data.minutes +' : '+ data.secondes;
+  displaytemps = data.heure+' : '+data.minutes +' : '+ data.secondes;
+  if(data.compteur !== '' || data.secondes !== '' || data.minutes !== '' || data.heure !== ''){
     ctx.font = "10px serif";
     ctx.fillText(displaytemps, canvas.width / 2, canvas.height);
   }
-  
 });
 
 //PLAYER 1 et 2
@@ -52,7 +50,6 @@ socket.on("players", (data) => {
 
       ctx.font = "20px serif";
       ctx.fillText(data[id].score, data[id].scoreX, data[id].scoreY);
-      
     }
   }
 });
@@ -66,6 +63,7 @@ socket.on("ball", (data) => {
     ctx.fill();
     ctx.closePath();
 });
+
 
 /*DROITE DE JOUER OU PAS */
 socket.on("right", (data) => {
@@ -82,6 +80,9 @@ socket.on("affichemessage", data => {
     finnalgamemessage.style.opacity = "1";
    }
 });
+
+
+
 //MOVE PLAYERS
 document.addEventListener("keydown", function (evt) {
   if (evt.code === "ArrowUp") {

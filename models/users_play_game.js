@@ -5,6 +5,11 @@ const UsersPlayGameCollection = new mongoose.Schema({
         type: String,
         required : true,
         default : "NC"
+    },
+    nbplayer : {
+        type: Number,
+        required : true,
+        default :0
     }
 });
 

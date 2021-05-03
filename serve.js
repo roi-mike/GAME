@@ -53,6 +53,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(cors());
 let pseudo;
+let nbofpart;
 
 //const postsRoutes = require('./routes/postsControler');-------
 //------------------------------------------------------
@@ -60,7 +61,6 @@ const { UsersPlayGame } = require("./models/users_play_game");
 const { PostsModel } = require("./models/postsModels");
 
 app.get("/", (req, res, next) => {
-  console.log('INFORMATION : '+req.session.nameplayeur);
   if(req.session.nameplayeur){
     res.setHeader('Content-Type', 'text/html');
     res.redirect(302,"/account");
@@ -83,7 +83,8 @@ app.post("/", (req, res) => {
       if(result != null ){
         res.render("index.ejs",{ erreurpseudo : " Pseudo déjà utilisé " });
       }else{
-        req.session.nameplayeur = pseudo;
+        req.session.nameplayeur = pseudo.toLowerCase();
+        req.session.nbofpart = 0;
 
         let newSave = new UsersPlayGame({
           nameplayer: pseudo.toLowerCase(), 
@@ -142,6 +143,7 @@ app.get("/account/game/", (req, res, next) => {
       redirect = false;
       return next();
     }
+    nbofpart = req.session.nbofpart;
     res.setHeader('Content-Type', 'text/html');
     res.render("game.ejs", { client: req.session.nameplayeur});
     res.end();
@@ -155,14 +157,16 @@ app.get("/account/game/", (req, res, next) => {
 });
 
 app.get('/disconect', (req, res)=>{
-  console.log('DECONNEXION SAMUEL');
-  if(req.session.nameplayeur){
-    req.session.destroy();
-
-    res.setHeader('Content-Type', 'text/html');
-    res.redirect('/');
-    res.end();
+  console.log("req.session.nbofpart : ", req.session.nbofpart);
+  console.log("nbofpart : ", nbofpart);
+  if(req.session.nameplayeur && nbofpart <= 0){
+    UsersPlayGame.deleteOne({ nameplayer : req.session.nameplayeur}, function(data){
+    });
   }
+  req.session.destroy();
+  res.setHeader('Content-Type', 'text/html');
+  res.redirect('/');
+  res.end();
 });
 
 io.on('connection', socket => {
@@ -177,6 +181,8 @@ io.on('connection', socket => {
     players[socket.id].score = 0;
     players[socket.id].scoreY = 15;
     players[socket.id].scoreX = (Object.keys(players).indexOf(socket.id) === 0) ? 120 : 170 ;
+
+    console.log(players);
     
     var peint = setInterval(function(){
  
@@ -249,10 +255,15 @@ io.on('connection', socket => {
 
         //CHECK IF THE RIGHT PLAYER HAS WIN
         if(players[`${Object.keys(players)[1]}`].score === 5){
+
+          //incremente le nombre de partie joué
+          nbofpart = nbofpart + 1;
+
+          console.log('SESSION FINI : ', pseudo);
+          console.log('NB playeur FINI : ', nbofpart);
           
           players[`${Object.keys(players)[1]}`].win = true;
-          //LE PLAYER RIGHT IS WINNER
-          console.log('DROITE I LA  GAGNÉ',players[`${Object.keys(players)[1]}`].win);
+
           //Message annonce partie terminé
           io.emit('affichemessage',1);
 
@@ -273,13 +284,17 @@ io.on('connection', socket => {
            });
           newRecord.save((err, docs) => {
             console.log("Error creating new data : " + err);
-            });
+          });
+
+          UsersPlayGame.updateOne({ nameplayer : players[socket.id].name}, { nbplayer : nbofpart }, function(data){});
+          
         }
       }
 
 
       /*VERIFIE SI LA BALLE TAPE A DROITE*/
       if(ball.x + ball.dx > 299 || ball.x + ball.dx < ball.ballRadius){
+
         //console.log('JE SUIS A DROITE');
         players[`${Object.keys(players)[0]}`].score += 1;
 
@@ -290,6 +305,13 @@ io.on('connection', socket => {
         
         //CHECK IF THE PLAYER IS WINNER
         if(players[`${Object.keys(players)[0]}`].score === 5){
+
+          //incremente le nombre de partie joué
+          nbofpart = nbofpart + 1;
+
+          console.log('SESSION FINI : ', pseudo);
+          console.log('NB playeur FINI : ', nbofpart);
+
           players[`${Object.keys(players)[0]}`].win = true;
           //LE PLAYER IS WINNER
           //Message annonce partie terminé
@@ -315,7 +337,14 @@ io.on('connection', socket => {
               }else{
                 console.log("Error creating new data : " + err);
               } 
-             }); 
+             });
+
+            }
+            
+            if(players[`${Object.keys(players)[0]}`].score === 5 || players[`${Object.keys(players)[1]}`].score === 5){
+              UsersPlayGame.updateOne({ nameplayer : players[`${Object.keys(players)[0]}`].name}, { nbplayer : nbofpart }, function(data){});
+              
+              UsersPlayGame.updateOne({ nameplayer : players[`${Object.keys(players)[1]}`].name}, { nbplayer : nbofpart }, function(data){});
         }
       }
 

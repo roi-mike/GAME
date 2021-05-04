@@ -113,6 +113,10 @@ app.post("/", (req, res) => {
 app.get('/account', (req,res)=>{
   if(req.session.nameplayeur){
     console.log('SESSION :', req.session.nameplayeur);
+    if(nbofpart === 1){  
+    }else{
+      nbofpart = req.session.nbofpart;
+    }
       PostsModel.find()
       .exec()
       .then(result =>{
@@ -136,19 +140,18 @@ app.get("/account/game/", (req, res, next) => {
   if(req.session.nameplayeur){
     if(redirect){
       console.log('REDIRECTION');
-      res.setHeader('Content-Type', 'text/html');
-      res.status(302);
-      res.redirect('/account');
+      res.set('Content-Type', 'text/html');
+      res.redirect(302,'/account');
       res.end();
       redirect = false;
       return next();
     }
-    nbofpart = req.session.nbofpart;
-    res.setHeader('Content-Type', 'text/html');
+    
+    res.set('Content-Type', 'text/html');
     res.render("game.ejs", { client: req.session.nameplayeur});
     res.end();
   }else{
-    res.setHeader('Content-Type', 'text/html');
+    res.set('Content-Type', 'text/html');
     res.redirect('/');
     res.end();
     return next();
@@ -164,7 +167,7 @@ app.get('/disconect', (req, res)=>{
     });
   }
   req.session.destroy();
-  res.setHeader('Content-Type', 'text/html');
+  res.set('Content-Type', 'text/html');
   res.redirect('/');
   res.end();
 });

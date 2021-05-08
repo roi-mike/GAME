@@ -125,12 +125,19 @@ app.get("/account/game/", (req, res, next) => {
 
   if(redirect){
     console.log('REDIRECTION account/game 142');
+
+    UsersPlayGame.deleteOne({nameplayer : pseudo },function(err){
+      if(err){
+        console.log("ERRERU");
+      }
+    }).where('okplay').equals(0);
+    req.session.destroy();
+    redirect = false;
     res.set('Content-Type', 'text/html');
     res.redirect(302,'/');
     res.end();
-    req.session.destroy();
-    redirect = false;
     return next();
+
   }
 
   if(req.session.nameplayeur){

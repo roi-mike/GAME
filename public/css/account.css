@@ -116,6 +116,25 @@ th{
     border: 1px solid whites;
     margin-right: 2px;
 }
+input[type=text]{
+    border: none;
+    color: black;
+    border-radius: 5px;
+    padding-left: 10px;
+}
+
+input[type=submit]{
+    background: grey;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+}
+input{
+    height: 50px;
+    width: 250px;
+    font-size: 15px;
+    cursor: pointer;
+}
 
 /*FOOTEUR*/
 footer{

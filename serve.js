@@ -53,36 +53,55 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(cors());
 let pseudo;
-let nbofpart;
 
 //const postsRoutes = require('./routes/postsControler');-------
 //------------------------------------------------------
 const { UsersPlayGame } = require("./models/users_play_game");
 const { PostsModel } = require("./models/postsModels");
 
-app.get("/", (req, res, next) => {
-  if(req.session.nameplayeur){
-    res.setHeader('Content-Type', 'text/html');
-    res.redirect(302,"/account");
-    return next();
-  }else{
-    res.status(200).render("index.ejs", {erreurpseudo: false});
-  }
-  // UsersPlayGame.find({},function (err, data) {
-  //   //console.log('RESULT ', data);
-  //   })
+app.get('/', (req,res)=>{
+    console.log("109 ACCOUNT 2 req.session.nameplayeur : ", req.session.nameplayeur);
+    console.log("110 ACCOUNT 2 req.session.nbofpart : ", req.session.nbofpart);
+    
+      PostsModel.find()
+      .exec()
+      .then(result =>{
+        if(result){
+          res.render('account.ejs',{pseudoid: req.session.nameplayeur, result: result, erreurpseudo: ''});
+        }
+      })
+      .catch(err =>{
+        res.status(404).json({
+          error: err,
+        })
+      });
 });
 
 app.post("/", (req, res) => {
-  pseudo = req.body.pseudo;
-  if (pseudo) {
+  pseudo = req.body.pseudo.toLowerCase();
+  console.log('PSEUDO '+pseudo);
     customer.customergame = true;
-    UsersPlayGame.findOne({nameplayer : pseudo.toLowerCase()})
+
+    UsersPlayGame.findOne({nameplayer : pseudo})
     .exec()
     .then(result => {
+      var result = result;
       if(result != null ){
-        res.render("index.ejs",{ erreurpseudo : " Pseudo déjà utilisé " });
+      PostsModel.find()
+      .exec()
+      .then(result =>{
+        if(result){
+          res.render("account.ejs",{result: result, pseudoid: req.session.nameplayeur, erreurpseudo : " Pseudo déjà utilisé " });
+        }
+      })
+      .catch(err =>{
+        res.status(404).json({
+          error: err,
+        })
+      });
       }else{
+        console.log("85 POST req.session.nameplayeur : ", req.session.nameplayeur);
+        console.log("86 POST req.session.nbofpart : ", req.session.nbofpart);
         req.session.nameplayeur = pseudo.toLowerCase();
         req.session.nbofpart = 0;
 
@@ -92,7 +111,7 @@ app.post("/", (req, res) => {
         newSave.save(function (err, data) {
           if(err){console.log('PAS INSCRIT')}
           })
-        res.redirect(301,`/account`);  
+        res.redirect(301,`/account/game`);  
       }
     })
     .catch(err =>{
@@ -100,76 +119,30 @@ app.post("/", (req, res) => {
         error: err,
       })
     });
-        // const newRecord = new PostsModel({
-        //   pseudoID: pseudo,
-        // });
-        // newRecord.save((err, docs) => {
-        //   if (!err) res.send(docs);
-        //   else console.log("Error creating new data : " + err);
-        // }); 
-  }
-});
-
-app.get('/account', (req,res)=>{
-  if(req.session.nameplayeur){
-    console.log('SESSION :', req.session.nameplayeur);
-    if(nbofpart === 1){  
-    }else{
-      nbofpart = req.session.nbofpart;
-    }
-      PostsModel.find()
-      .exec()
-      .then(result =>{
-        if(result){
-          res.render('account.ejs',{pseudoid: req.session.nameplayeur.toLowerCase(), result: result})
-        }
-      })
-      .catch(err =>{
-        res.status(404).json({
-          error: err,
-        })
-      });
-  }else{
-  res.setHeader('Content-Type', 'text/html');
-  res.redirect('/');
-  res.end();
-  }
 });
 
 app.get("/account/game/", (req, res, next) => {
+
+  if(redirect){
+    console.log('REDIRECTION account/game 142');
+    res.set('Content-Type', 'text/html');
+    res.redirect(302,'/');
+    res.end();
+    req.session.destroy();
+    redirect = false;
+    return next();
+  }
+
   if(req.session.nameplayeur){
-    if(redirect){
-      console.log('REDIRECTION');
-      res.set('Content-Type', 'text/html');
-      res.redirect(302,'/account');
-      res.end();
-      redirect = false;
-      return next();
-    }
-    
+
+    console.log("143 ACCOUNT/GAME req.session.nameplayeur 142 : ", req.session.nameplayeur);
+    console.log("144 ACCOUNT/GAME req.session.nbofpart 143 : ", req.session.nbofpart);
+
     res.set('Content-Type', 'text/html');
     res.render("game.ejs", { client: req.session.nameplayeur});
     res.end();
-  }else{
-    res.set('Content-Type', 'text/html');
-    res.redirect('/');
-    res.end();
-    return next();
   }
   
-});
-
-app.get('/disconect', (req, res)=>{
-  console.log("req.session.nbofpart : ", req.session.nbofpart);
-  console.log("nbofpart : ", nbofpart);
-  if(req.session.nameplayeur && nbofpart <= 0){
-    UsersPlayGame.deleteOne({ nameplayer : req.session.nameplayeur}, function(data){
-    });
-  }
-  req.session.destroy();
-  res.set('Content-Type', 'text/html');
-  res.redirect('/');
-  res.end();
 });
 
 io.on('connection', socket => {
@@ -184,12 +157,9 @@ io.on('connection', socket => {
     players[socket.id].score = 0;
     players[socket.id].scoreY = 15;
     players[socket.id].scoreX = (Object.keys(players).indexOf(socket.id) === 0) ? 120 : 170 ;
-
-    console.log(players);
     
     var peint = setInterval(function(){
  
-
       /*Verif numb players connected if player is egal one player on start the parti*/
       if(Object.keys(players).length === 1){
         io.emit("right", 0);
@@ -238,8 +208,6 @@ io.on('connection', socket => {
       //Envoyer les joueurs
       io.emit('players',players);
 
-      
-
       /*FAIRE REBONDIRE LA BALLE SUR LES MURS DE DROITE ET DE GAUCHE*/
       if(ball.x + ball.dx > 300 || ball.x + ball.dx < ball.ballRadius) {
         ball.dx = -ball.dx;
@@ -259,18 +227,14 @@ io.on('connection', socket => {
         //CHECK IF THE RIGHT PLAYER HAS WIN
         if(players[`${Object.keys(players)[1]}`].score === 5){
 
-          //incremente le nombre de partie joué
-          nbofpart = nbofpart + 1;
-
-          console.log('SESSION FINI : ', pseudo);
-          console.log('NB playeur FINI : ', nbofpart);
+          console.log('SESSION FINI 290 : ', pseudo);
           
           players[`${Object.keys(players)[1]}`].win = true;
 
-          //Message annonce partie terminé
-          io.emit('affichemessage',1);
-
-          //inscription dans la base de donne
+          
+          //inscription dans la base de donnee du score et de la validation que le jeu et bien fini
+        
+          
           let newRecord = new PostsModel({
             playerone: [
               players[`${Object.keys(players)[0]}`].name.toLowerCase(),
@@ -284,13 +248,19 @@ io.on('connection', socket => {
               players[`${Object.keys(players)[1]}`].score,
             ],
             tempsgame : tempsgame.minutes +" : "+tempsgame.secondes, 
-           });
-          newRecord.save((err, docs) => {
-            console.log("Error creating new data : " + err);
           });
-
-          UsersPlayGame.updateOne({ nameplayer : players[socket.id].name}, { nbplayer : nbofpart }, function(data){});
+          newRecord.save((err, docs) => {
+            if(err){
+              console.log(err);
+            }
+          });
           
+          UsersPlayGame.updateOne({ nameplayer : players[`${Object.keys(players)[0]}`].name},{okplay:1}, function(data){});
+          
+          UsersPlayGame.updateOne({ nameplayer : players[`${Object.keys(players)[1]}`].name},{okplay:1}, function(data){});
+          
+          //Message annonce partie terminé
+          io.emit('affichemessage',1);
         }
       }
 
@@ -309,46 +279,42 @@ io.on('connection', socket => {
         //CHECK IF THE PLAYER IS WINNER
         if(players[`${Object.keys(players)[0]}`].score === 5){
 
-          //incremente le nombre de partie joué
-          nbofpart = nbofpart + 1;
-
-          console.log('SESSION FINI : ', pseudo);
-          console.log('NB playeur FINI : ', nbofpart);
+          console.log('SESSION FINI 319 : ', pseudo);
 
           players[`${Object.keys(players)[0]}`].win = true;
           //LE PLAYER IS WINNER
           //Message annonce partie terminé
-          io.emit('affichemessage',1);
-
-          //inscription dans la base de donne
+          
+          
+          //inscription dans la base de donnee du score et de la validation que le jeu et bien fini
+          
           let newRecord = new PostsModel({
-              playerone: [
-                players[`${Object.keys(players)[0]}`].name.toLowerCase(),
-                players[`${Object.keys(players)[0]}`].win,
-                players[`${Object.keys(players)[0]}`].score,
-              ],
-              playertwo: [
-                players[`${Object.keys(players)[1]}`].name.toLowerCase(),
-                players[`${Object.keys(players)[1]}`].win,
-                players[`${Object.keys(players)[1]}`].score,
-              ],
-              tempsgame : tempsgame.minutes +" : "+tempsgame.secondes,
-             });
+            playerone: [
+              players[`${Object.keys(players)[0]}`].name.toLowerCase(),
+              players[`${Object.keys(players)[0]}`].win,
+              players[`${Object.keys(players)[0]}`].score,
+            ],
+            playertwo: [
+              players[`${Object.keys(players)[1]}`].name.toLowerCase(),
+              players[`${Object.keys(players)[1]}`].win,
+              players[`${Object.keys(players)[1]}`].score,
+            ],
+            tempsgame : tempsgame.minutes +" : "+tempsgame.secondes, 
+          });
           newRecord.save((err, docs) => {
-              if (!err){
-
-              }else{
-                console.log("Error creating new data : " + err);
-              } 
-             });
-
+            if(err){
+              console.log("Error creating new data : " + err);
             }
-            
-            if(players[`${Object.keys(players)[0]}`].score === 5 || players[`${Object.keys(players)[1]}`].score === 5){
-              UsersPlayGame.updateOne({ nameplayer : players[`${Object.keys(players)[0]}`].name}, { nbplayer : nbofpart }, function(data){});
-              
-              UsersPlayGame.updateOne({ nameplayer : players[`${Object.keys(players)[1]}`].name}, { nbplayer : nbofpart }, function(data){});
+          });
+          
+          UsersPlayGame.updateOne({ nameplayer : players[`${Object.keys(players)[0]}`].name},{okplay:1}, function(data){});
+          
+          UsersPlayGame.updateOne({ nameplayer : players[`${Object.keys(players)[1]}`].name},{okplay:1}, function(data){});
+          
+          io.emit('affichemessage',1);
         }
+
+
       }
 
       /*FAIRE REBONDIRE LA BALLE SUR LES MURS DU HAUT ET DU BAS*/
@@ -384,9 +350,13 @@ io.on('connection', socket => {
 
     customer.customergame = false;
     delete players[socket.id];
-    console.log('DECONNEXION ! ')
+    
+
+    console.log('DECONNEXION ! ');
   });
 });
+
+
 
 app.get("*", (req, res) => {
   var title = "ERREUR";

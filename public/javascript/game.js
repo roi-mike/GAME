@@ -78,6 +78,7 @@ socket.on("affichemessage", data => {
   if(data){
     finnalgamemessage.style.visibility = "visible";
     finnalgamemessage.style.opacity = "1";
+    document.cookie = "PTS = 666 ";
    }
 });
 

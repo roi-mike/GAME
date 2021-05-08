@@ -11,7 +11,7 @@
         <main>
             <div id="inscriptionpageindex">
                 <h1 style="text-align:center">HONDI PONG</h1>
-                <div><h3 style="text-align:center; color:rgb(186, 127, 38); margin-bottom:40px">Bonjour <%= pseudoid %></h3> <a style="position:absolute; right:150px; top: 30px" href="/disconect"><button style="width:140px; height:40px;border:2px solid red;cursor: pointer">Déconnexion</button></a></div>
+                <div><h3 style="text-align:center; color:rgb(186, 127, 38); margin-bottom:40px">Bonjour</h3></div>
                 <div id="info_game">
                     <p>Les touches du jeu Pong : </p>
                     <p><span style="color: red; font-size:30px"> &#9888;</span> Fléche droite &rarr; = lancer la balle sense aléatoire <span style="color: red; font-size:30px"> &#9888;</span></p>
@@ -19,7 +19,11 @@
                     <p>Fléche bas &darr; = décendre la barre du joueur</p>
                 </div>
                 <div id="playgame">
-                    <a href="/account/game/"><button>COMMENCER UNE PARTIE</button></a>
+                    <%= erreurpseudo %>
+                    <form action="/" method="post">
+                        <input name="pseudo" type="text" placeholder="Saisir un pseudo" />
+                        <input type="submit" value="Commencer à jouer" />
+                    </form>
                 </div>
                 <div id="scoreplayers">
                     
@@ -47,7 +51,7 @@
                                 </tr>
                             <% } %>
                         </tbody>
-                    </table>                    
+                    </table>                 
                 </div>
                 
             </div>

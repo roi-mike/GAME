@@ -6,7 +6,7 @@ const UsersPlayGameCollection = new mongoose.Schema({
         required : true,
         default : "NC"
     },
-    nbplayer : {
+    okplay : {
         type: Number,
         required : true,
         default :0

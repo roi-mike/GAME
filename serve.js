@@ -100,8 +100,8 @@ app.post("/", (req, res) => {
         })
       });
       }else{
-        console.log("85 POST req.session.nameplayeur : ", req.session.nameplayeur);
-        console.log("86 POST req.session.nbofpart : ", req.session.nbofpart);
+        console.log("103 POST req.session.nameplayeur : ", req.session.nameplayeur);
+        console.log("104 POST req.session.nbofpart : ", req.session.nbofpart);
         req.session.nameplayeur = pseudo.toLowerCase();
         req.session.nbofpart = 0;
 
@@ -121,14 +121,13 @@ app.post("/", (req, res) => {
     });
 });
 
-app.get("/account/game/", (req, res, next) => {
+app.get("/account/game", (req, res, next) => {
 
   if(redirect){
-    console.log('REDIRECTION account/game 142');
 
     UsersPlayGame.deleteOne({nameplayer : pseudo },function(err){
       if(err){
-        console.log("ERRERU");
+        console.log("ERREUR 130");
       }
     }).where('okplay').equals(0);
     req.session.destroy();
@@ -142,12 +141,10 @@ app.get("/account/game/", (req, res, next) => {
 
   if(req.session.nameplayeur){
 
-    console.log("143 ACCOUNT/GAME req.session.nameplayeur 142 : ", req.session.nameplayeur);
-    console.log("144 ACCOUNT/GAME req.session.nbofpart 143 : ", req.session.nbofpart);
-
     res.set('Content-Type', 'text/html');
     res.render("game.ejs", { client: req.session.nameplayeur});
     res.end();
+
   }
   
 });

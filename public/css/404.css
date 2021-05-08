@@ -33,7 +33,6 @@ div#information_profil{
     color: #888888;
 }
 div#information{/*INFORMATION CHANGER HEIGHT*/
-    background-color: pink;
     opacity: 0.6;
     flex-grow: 1 ;
     text-align: right;
@@ -45,16 +44,16 @@ p.title_information{
 }
 div#profil{/*INFORMATION CHANGER HEIGHT*/
     flex-grow: 3;
-    background-color: purple;
     opacity: 0.6;
 }
-div#retour_accueil a{
+#btnbackhome{
+    position: absolute;
     cursor: pointer;
-    width: 150px;
-    height: 50px;
-    background-color: red;
-    color: white;
-    text-decoration: none;
-    padding: 10px;
-    border-radius: 10%;
+    width: 350px;
+    transform: translate(45px);
+    top: 45%;
+    border: 2px solid red;
+    padding: 20px;
+    border-radius: 5px;
+
 }
